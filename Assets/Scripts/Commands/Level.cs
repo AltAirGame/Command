@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MHamidi;
+using Newtonsoft.Json.Linq;
 
 
 [System.Serializable]
@@ -12,6 +13,45 @@ public class Level
     public ICommand[] P2BufferSize;
     public int[,] LevelLayout;
 
+
+    public Level()
+    {
+        
+    }
+    public Level(JToken token)
+    {
+        
+        name = Util.NullabelCaster.CastString(token["name"]);
+        var levelBufferSize = Util.NullabelCaster.CastInt(token["LevelBufferSize"]);
+        var p1BufferSize = Util.NullabelCaster.CastInt(token["LevelBufferSize"]);
+        var p2BufferSize = Util.NullabelCaster.CastInt(token["LevelBufferSize"]);
+        
+        var first = (JArray)token["LevelLayout"];
+        var second = (JArray)first[0];
+        var twoDimensionalJarray = new JArray[first.Count, second.Count];
+        for (int i = 0; i < first.Count; i++)
+        {
+            for (int j = 0; j < second.Count; j++)
+            {
+                var s = (JArray)first[i];
+                twoDimensionalJarray[i, j] =(JArray)s[j];
+            }
+        }
+
+        for (int i = 0; i < first.Count; i++)
+        {
+            for (int j = 0; j < second.Count; j++)
+            { 
+                LevelLayout[i, j] = Util.NullabelCaster.CastInt(twoDimensionalJarray[i, j]);
+            }
+        }
+        
+        LevelBufferSize = new ICommand[levelBufferSize];
+        P1BufferSize = new ICommand[p1BufferSize];
+        P2BufferSize = new ICommand[p2BufferSize];
+        
+    }
+        
     public Level(List<ICommand> availableCommand,int [,] levelLayout, int bufferSize,int p1BufferSize,int p2BufferSize)
     {
         

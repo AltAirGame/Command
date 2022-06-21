@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace MHamidi
@@ -15,7 +16,23 @@ namespace MHamidi
         {
             
         }
+        public static class NullabelCaster
+        {
+            public static int CastInt(JToken? data)
+            {
+                return (int?) data ?? 0;
+            }
 
+            public static bool Castbool(JToken? data)
+            {
+                return (bool?) data ?? false;
+            }
+
+            public static string CastString(JToken? data)
+            {
+                return (string?) data ?? string.Empty;
+            }
+        }
         public static void ShowMessag (string message, TextColor color=TextColor.White)
         {
             if (IsLoging is false)

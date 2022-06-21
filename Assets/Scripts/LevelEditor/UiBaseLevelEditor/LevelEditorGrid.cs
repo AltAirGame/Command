@@ -9,32 +9,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-[System.Serializable]
-public class PlayerData
-{
-    public int characterSkin;
-    public string saveName;
-    public bool soundSetting;
-    public int[] unlockedLevels;
-    public LevelCollection levels;
-
-    public PlayerData()
-    {
-        levels = new LevelCollection();
-    }
-}
-
-[Serializable]
-public class LevelCollection
-{
-    public List<Level> levels;
-
-    public LevelCollection()
-    {
-        levels=new List<Level>();
-    }
-}
-
 public class LevelEditorGrid : MonoBehaviour
 {
     [SerializeField] private Toggle[] _toggles;
@@ -57,22 +31,22 @@ public class LevelEditorGrid : MonoBehaviour
 
     private void Start()
     {
-        var json = SavingSystem.Load("PlayerData");
-        if (string.IsNullOrWhiteSpace(json))
-        {
-            _dropdown.ClearOptions();
-            _playerData = null;
-        }
-        else
-        {
-            
-            PopulateDropDown(json);
-            //We Had Saved levels
-            //We Load the last Level
-        }
-
-        parrent = GetComponent<RectTransform>();
-        CreatGrid();
+        // var json = SavingSystem.Load("PlayerData");
+        // if (string.IsNullOrWhiteSpace(json))
+        // {
+        //     _dropdown.ClearOptions();
+        //     _playerData = null;
+        // }
+        // else
+        // {
+        //     
+        //     PopulateDropDown(json);
+        //     //We Had Saved levels
+        //     //We Load the last Level
+        // }
+        //
+        // parrent = GetComponent<RectTransform>();
+        // CreatGrid();
     }
 
     private void CreatGrid()
@@ -105,7 +79,7 @@ public class LevelEditorGrid : MonoBehaviour
         commands.Clear();
         if (_toggles is null || _toggles.Length == 0)
         {
-            Util.ShowMessag($"Toggels is Empty Or Null", TextColor.Yellow);
+            Util.ShowMessag($"Toggles is Empty Or Null", TextColor.Yellow);
             return;
         }
 
@@ -162,15 +136,14 @@ public class LevelEditorGrid : MonoBehaviour
     {
         HandleTogglesData();
         HandleBufferSizeData();
-        
-        if (_playerData is null)
-        {
-            //First Time We want to Save level
-            _playerData = new PlayerData();
-            _playerData.levels.levels.Add(new Level(LevelName.text,commands,HandelGridData(),mainBufferSize,p1BufferSize,p1BufferSize));
-            SavingSystem.Save("PlayeData",JsonConvert.SerializeObject(_playerData));
-        }
+                              
+        if (_playerData is not null) return;
+        //First Time We want to Save level
+        _playerData = new PlayerData();
+        _playerData.levels.levels.Add(new Level(LevelName.text,commands,HandelGridData(),mainBufferSize,p1BufferSize,p1BufferSize));
+        SavingSystem.Save("PlayerData",JsonConvert.SerializeObject(_playerData));
         //SaveData.current.SaveInResource(json,name);
+        
     }
 
     private int[,] HandelGridData()
