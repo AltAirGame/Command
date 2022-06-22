@@ -141,11 +141,11 @@ public class LevelEditorGrid : MonoBehaviour
         //First Time We want to Save level
         _playerData = new PlayerData();
         _playerData.levels.levels.Add(new Level(LevelName.text,commands,HandelGridData(),mainBufferSize,p1BufferSize,p1BufferSize));
-        SavingSystem.Save("PlayerData",JsonConvert.SerializeObject(_playerData));
+        // SavingSystem.Save("PlayerData",JsonConvert.SerializeObject(_playerData));
         //SaveData.current.SaveInResource(json,name);
         
     }
-
+    
     private int[,] HandelGridData()
     {
         var array=new int[width, height];
