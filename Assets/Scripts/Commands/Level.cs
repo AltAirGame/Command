@@ -18,6 +18,11 @@ public class Level
     {
         
     }
+
+    public Level(LevelData levelData)
+    {
+        
+    }
     public Level(JToken token)
     {
         
@@ -110,4 +115,52 @@ public class Level
     {
        
     }
+}
+
+//this Data Class is Exist In the cuz of none Serialization of abstract classes 
+public class LevelData
+{
+    private string name;
+    private List<int> avilableCommand = new List<int>();
+    private int levelBufferSize;
+    private int p1BufferSize;
+    private int p2BufferSize;
+    private int[,] levelLayout;
+
+    public LevelData(JToken token)
+    {
+        
+        name = Util.NullabelCaster.CastString(token["name"]);
+        var levelBufferSize = Util.NullabelCaster.CastInt(token["LevelBufferSize"]);
+        var p1BufferSize = Util.NullabelCaster.CastInt(token["LevelBufferSize"]);
+        var p2BufferSize = Util.NullabelCaster.CastInt(token["LevelBufferSize"]);
+        
+        var first = (JArray)token["LevelLayout"];
+        var second = (JArray)first[0];
+        var twoDimensionalJarray = new JArray[first.Count, second.Count];
+        for (int i = 0; i < first.Count; i++)
+        {
+            for (int j = 0; j < second.Count; j++)
+            {
+                var s = (JArray)first[i];
+                twoDimensionalJarray[i, j] =(JArray)s[j];
+            }
+        }
+
+        for (int i = 0; i < first.Count; i++)
+        {
+            for (int j = 0; j < second.Count; j++)
+            { 
+                levelLayout[i, j] = Util.NullabelCaster.CastInt(twoDimensionalJarray[i, j]);
+            }
+        }
+        
+       
+        
+    }
+    public LevelData()
+    {
+        
+    }
+
 }
