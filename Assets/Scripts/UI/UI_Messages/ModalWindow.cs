@@ -12,6 +12,39 @@ namespace MHamidi.UI.UI_Messages
         public void Hide(GameObject Subject, Action OnHide);
     }
 
+    public class SimpleHideAndShow:IUianimation
+    {
+        public void Show(GameObject Subject, Action OnShow)
+        {
+            Subject.SetActive(true);
+            OnShow?.Invoke();
+        }
+        public void Hide(GameObject Subject, Action OnHide)
+        {
+            Subject.SetActive(false);
+            OnHide?.Invoke();
+        }
+    }
+    public class SlidInOut:IUianimation
+    {
+        public void Show(GameObject Subject, Action OnShow)
+        {
+            Subject.SetActive(true);
+            var startPos = new Vector3(-3 * Screen.width, .5f * Screen.height, 0);
+            var targetPos = new Vector3(.5f * Screen.width, .5f * Screen.height, 0);
+            
+            OnShow?.Invoke();
+        }
+        public void Hide(GameObject Subject, Action OnHide)
+        {
+            Subject.SetActive(false);
+            var startPos = Subject.transform.position;
+            var targetPos = new Vector3(-3 * Screen.width, .5f * Screen.height, 0);
+            
+            OnHide?.Invoke();
+        }
+    }
+
     public class ModalWindowData
     {
         public string Header;
@@ -24,8 +57,15 @@ namespace MHamidi.UI.UI_Messages
 
         public ModalWindowData()
         {
+         Header=$"Default Header";
+         Message=$"Default Message";
+         OnClickOkayMessage="Okay";
+         OnCancelMessage=$"Cancel";
+         OnClickOkay=null;
+         OnCancel=null;
+         UIAnimation=null;
         }
-
+        
         public ModalWindowData(string header, string message, string onClickOkayMessage, string onCancelMessage,
             IUianimation uiAnimation, Action onClickOkay = null, Action onCancel = null)
         {
@@ -52,10 +92,6 @@ namespace MHamidi.UI.UI_Messages
     {
         //Data
         private ModalWindowData data;
-        
-        
-        
-        
         //View 
         [SerializeField]
         private TextMeshProUGUI headerText;
@@ -69,8 +105,6 @@ namespace MHamidi.UI.UI_Messages
         private Button OnCLickOkay;
         [SerializeField]
         private Button OnClickCancel;
-
-
         //Controller
 
         public void Setup(ModalWindowData data)
@@ -78,14 +112,13 @@ namespace MHamidi.UI.UI_Messages
             this.data = data;
             UpdateView();
         }
-
         private void UpdateView()
         {
 
             headerText.text = string.IsNullOrWhiteSpace(data.Header) ? string.Empty : data.Header;
             messageText.text = string.IsNullOrWhiteSpace(data.Message) ? $"Some thing Went Wrong" : data.Message;
             onClickOkayText.text = string.IsNullOrWhiteSpace(data.Header) ?$"Okay"  : data.OnClickOkayMessage;
-            headerText.text = string.IsNullOrWhiteSpace(data.Header) ? $" Cancel" : data.OnCancelMessage;
+            onClickCancelText.text = string.IsNullOrWhiteSpace(data.Header) ? $" Cancel" : data.OnCancelMessage;
             OnCLickOkay.onClick.RemoveAllListeners();
             OnClickCancel.onClick.RemoveAllListeners();
             var OnClickOkayAction = data.OnClickOkay is null
@@ -111,7 +144,7 @@ namespace MHamidi.UI.UI_Messages
             data.UIAnimation.Show(this.gameObject,null);
         }
 
-        public void Hide()
+        private void Hide()
         {
             if (data is null||data.UIAnimation is null)
             {

@@ -15,7 +15,6 @@ namespace MHamidi
         Yellow,
         Black
     }
-
     public static class Util
     {
         public static bool IsLoging = true;
@@ -31,7 +30,7 @@ namespace MHamidi
                 return (int?)data ?? 0;
             }
 
-            public static bool Castbool(JToken? data)
+            public static bool CastBool(JToken? data)
             {
                 return (bool?)data ?? false;
             }
