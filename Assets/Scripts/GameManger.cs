@@ -4,10 +4,21 @@ using UnityEngine;
 
 namespace MHamidi
 {
-
-
     public class GameManger : MonoBehaviour
     {
+        
+        //List of Work
+        //Handel Player Input Such As Exit 
+        //
+        //
+        //
+        //
+        //
+        
+        
+        
+        
+        
         public List<Level> levels;
         [SerializeField] private RectTransform mechanicParrent;
         public GameButton ButtonPrefab;

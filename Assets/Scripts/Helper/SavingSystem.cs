@@ -1,22 +1,25 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using System.Xml.Linq;
+using MHamidi;
 using UnityEngine;
 
 namespace Helper
 {
+    
+    
+    //You Can Replace this part with An Other Module Like a Clint Wich Request to The Server and Load the Data form the Server 
     public class SavingSystem : MonoBehaviour, IResources
     {
         public ResurceResponse Save(string saveFile, String SaveSubject)
         {
             var response = new ResurceResponse();
             
-            var path = GetPathFromSaveFile(saveFile);
+            var path = Util.GetPersistentDataPath(saveFile);
 
             using (var stream = File.Open(path, FileMode.Create))
             {
-                var bytes = SerializeString(SaveSubject);
+                var bytes = Util.SerilizeStringToByte(SaveSubject);
                 stream.Write(bytes, 0, bytes.Length);
                 
             }
@@ -30,7 +33,7 @@ namespace Helper
         public ResurceResponse Load(string saveFile)
         {
             var response = new ResurceResponse();
-            var path = GetPathFromSaveFile(saveFile);
+            var path = Util.GetPersistentDataPath(saveFile);
             if (!File.Exists(path))
             {
                 response.body = String.Empty;
@@ -65,14 +68,6 @@ namespace Helper
         }
 
 
-        private static Byte[] SerializeString(string file)
-        {
-            return Encoding.UTF8.GetBytes(file);
-        }
-
-        private static string GetPathFromSaveFile(string SaveFile)
-        {
-            return Path.Combine(Application.persistentDataPath, SaveFile);
-        }
+       
     }
 }
