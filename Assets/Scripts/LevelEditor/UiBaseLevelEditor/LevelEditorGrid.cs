@@ -21,9 +21,10 @@ public class LevelEditorGrid : MonoBehaviour
     
     [SerializeField] private LevelData currrentLevel;
     [SerializeField] private List<int> commands = new List<int>();
-    
-   
+        
+    public DataManger dataManger;
     public ICellEditor[,] Grid;
+    public int[,] grid;
   
     [SerializeField]
     private RectTransform parrent;
@@ -45,11 +46,13 @@ public class LevelEditorGrid : MonoBehaviour
         // }
         //
         // parrent = GetComponent<RectTransform>();
+         dataManger ??= GetComponent<DataManger>();
          CreatGrid();
     }
 
     private void CreatGrid()
     {
+        grid = new int[width, height];
         Grid = new ICellEditor[width, height];
         var parentSize = new Vector2(parrent.rect.width, parrent.rect.height);
         var cellSizeX = parentSize.x / (float)width;
@@ -103,28 +106,25 @@ public class LevelEditorGrid : MonoBehaviour
     public void SaveLevel()
     {
         HandleTogglesData();
+        UpdateGrid(grid);
+        dataManger ??= GetComponent<DataManger>();
+        DataManger.instance.AddTOLevels(new Level(DataManger.instance.gameData.levels.Count.ToString(),commands,grid,BufferSize.CurrentValue,P1Size.CurrentValue,P2Size.CurrentValue));
         
-        
-      
- 
-        DataManger.current.gameData.levels.Add(new Level(DataManger.current.gameData.levels.Count.ToString(),commands,HandelGridData(),BufferSize.CurrentValue,P1Size.CurrentValue,P2Size.CurrentValue));
-      
-       
-        
+
     }
     
-    private int[,] HandelGridData()
+    private void  UpdateGrid(int [,] grid)
     {
-        var array=new int[width, height];
+        
         for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
             {
-                array[i, j] = Grid[i, j].cellType;
+                grid[i, j] = Grid[i, j].cellType;
             }
         }
-
-        return array;
+            
+       
     }
 
 
@@ -139,7 +139,7 @@ public class LevelEditorGrid : MonoBehaviour
     {
         
         List<string> options = new List<string>();
-        foreach (var level in DataManger.current.gameData.levels)
+        foreach (var level in DataManger.instance.gameData.levels)
         {
             options.Add(level.name);
         }

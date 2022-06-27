@@ -20,7 +20,6 @@ public class GameData
     }
     public GameData(JObject jObject)
     {
-
         var data = (JArray)jObject["levels"];
         foreach (var token in data)
         {

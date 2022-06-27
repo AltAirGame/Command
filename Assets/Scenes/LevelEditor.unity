@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3708985, g: 0.3783704, b: 0.35722548, a: 1}
+  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.35872698, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -216,8 +216,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1053015236}
+  - component: {fileID: 1053015238}
+  - component: {fileID: 1053015237}
+  - component: {fileID: 1053015239}
   m_Layer: 0
-  m_Name: SaveData
+  m_Name: Repository
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -238,6 +241,50 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1053015237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053015234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7242121df28c45bf977f6fa1737eea7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1053015238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053015234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a964a40ce3efe4ec0be112946357f860, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1053015239
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1053015234}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f14fd21076714b6aa7f16d1e8f419271, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerdata:
+    characterSkin: 0
+    currentLanguage: 0
+    saveName: 
+    soundSetting: 0
+    unlockedLevels: 
+  gameData:
+    levels: []
 --- !u!1 &1680336016
 GameObject:
   m_ObjectHideFlags: 0
@@ -384,6 +431,14 @@ PrefabInstance:
     - target: {fileID: 6646922074964076467, guid: cce556608f6c7404f8c53273f6186c4d, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6646922075113859963, guid: cce556608f6c7404f8c53273f6186c4d, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 118.599915
+      objectReference: {fileID: 0}
+    - target: {fileID: 6646922075113859963, guid: cce556608f6c7404f8c53273f6186c4d, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 4.1565857
       objectReference: {fileID: 0}
     - target: {fileID: 6646922075605403602, guid: cce556608f6c7404f8c53273f6186c4d, type: 3}
       propertyPath: m_Pivot.x

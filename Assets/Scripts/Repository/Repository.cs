@@ -19,7 +19,7 @@ namespace MHamidi
 
         [SerializeField] private IResources _resources;
 
-        private void Start()
+        private void OnEnable()
         {
             _resources = GetComponent<IResources>();
         }
@@ -27,10 +27,13 @@ namespace MHamidi
         public RepositoryResponse<GameData> LoadGameData(string saveDestination)
         {
             var levelCollectionResponse = new RepositoryResponse<GameData>();
+            _resources ??= GetComponent<IResources>();
+
             var response = _resources.Load(saveDestination);
             if (response.isSuccess)
             {
                 levelCollectionResponse.data = new GameData(JObject.Parse(response.body));//Leveldata->Level
+                levelCollectionResponse.error = new Error();
             }
             else
             {
@@ -42,10 +45,13 @@ namespace MHamidi
         public RepositoryResponse<PlayerData> LoadPlayerData(string saveDestination)
         {
             var levelCollectionResponse = new RepositoryResponse<PlayerData>();
+            _resources ??= GetComponent<IResources>();
             var response = _resources.Load(saveDestination);
             if (response.isSuccess)
             {
                 levelCollectionResponse.data = new PlayerData(JObject.Parse(response.body));
+                levelCollectionResponse.error = new Error();
+                
             }
             else
             {
@@ -57,7 +63,7 @@ namespace MHamidi
         
         // There is A Problem Here
         // I Must Choose between Making 2 Model for the Level  Collection or Serialize my Level Manually  
-        public RepositoryResponse<GameData> SaveEditorLevel(string saveDestination,GameData gameData)
+        public RepositoryResponse<GameData> SaveGameData(string saveDestination,GameData gameData)
         {
             var _response = new RepositoryResponse<GameData>();
             var saveSubject=JsonConvert.SerializeObject(gameData);//Level ->Level Data
@@ -76,7 +82,7 @@ namespace MHamidi
             }
             return _response;
         }
-        public RepositoryResponse<PlayerData> SaveEditorLevel(string saveDestination,PlayerData playerData)
+        public RepositoryResponse<PlayerData> SavePlayerData(string saveDestination,PlayerData playerData)
         {
             var _response = new RepositoryResponse<PlayerData>();
             var saveSubject=JsonConvert.SerializeObject(playerData);
