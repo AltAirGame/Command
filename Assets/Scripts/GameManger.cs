@@ -25,19 +25,13 @@ namespace MHamidi
 
         private void Start()
         {
-            levels = new List<Level>();
-            var commandList = new List<ICommand>();
-            commandList.Add(new MoveCommand());
-            commandList.Add(new TurnLeftCommand());
-            commandList.Add(new TurnRightCommand());
-            commandList.Add(new InteractCommand());
-            commandList.Add(new JumpCommand());
-            // levels.Add(new Level(commandList, 8));
+         
+          
 
-            StartLevel(0);
+           // StartLevel(0);
         }
 
-
+        
         private void StartLevel(int i)
         {
             //SetUp the Level By Level Object 
@@ -50,12 +44,13 @@ namespace MHamidi
             foreach (var item in levels[i].AvailableCommand)
             {
                 var button = Instantiate(ButtonPrefab, mechanicParrent);
-                button.SetListener(() => { CommandManger.current.AddToBuffer(item); });
-                var icon = Resources.Load<Sprite>(item.name);
+                var command = CommandManger.current.commandLookUpTable[item];
+                button.SetListener(() => { CommandManger.current.AddToBuffer(command); });
+                var icon = Resources.Load<Sprite>(command.name);
                 button.SetIcon(icon);
 
 
-                button.gameObject.name = item.name;
+                button.gameObject.name = command.name;
             }
         }
 

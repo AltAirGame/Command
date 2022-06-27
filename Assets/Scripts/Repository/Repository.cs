@@ -1,3 +1,4 @@
+using System;
 using Helper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -8,6 +9,14 @@ namespace MHamidi
 {
     public class Repository : MonoBehaviour
     {
+
+        public static Repository current;
+
+        private void Awake()
+        {
+            current = this;
+        }
+
         [SerializeField] private IResources _resources;
 
         private void Start()
@@ -15,13 +24,13 @@ namespace MHamidi
             _resources = GetComponent<IResources>();
         }
 
-        public RepositoryResponse<LevelCollection> LoadEditorLevel(string saveDestination)
+        public RepositoryResponse<GameData> LoadGameData(string saveDestination)
         {
-            var levelCollectionResponse = new RepositoryResponse<LevelCollection>();
+            var levelCollectionResponse = new RepositoryResponse<GameData>();
             var response = _resources.Load(saveDestination);
             if (response.isSuccess)
             {
-                levelCollectionResponse.data = new LevelCollection(JObject.Parse(response.body));
+                levelCollectionResponse.data = new GameData(JObject.Parse(response.body));//Leveldata->Level
             }
             else
             {
@@ -48,14 +57,14 @@ namespace MHamidi
         
         // There is A Problem Here
         // I Must Choose between Making 2 Model for the Level  Collection or Serialize my Level Manually  
-        public RepositoryResponse<LevelCollection> SaveEditorLevel(string saveDestination,LevelCollection levelCollection)
+        public RepositoryResponse<GameData> SaveEditorLevel(string saveDestination,GameData gameData)
         {
-            var _response = new RepositoryResponse<LevelCollection>();
-            var saveSubject=JsonConvert.SerializeObject(levelCollection);
+            var _response = new RepositoryResponse<GameData>();
+            var saveSubject=JsonConvert.SerializeObject(gameData);//Level ->Level Data
             var response = _resources.Save(saveDestination,saveSubject);
             if (response.isSuccess)
             {
-                _response.data = levelCollection;
+                _response.data = gameData;
                 
             }
             else

@@ -7,7 +7,7 @@ public class PlayerData
     public string saveName;
     public bool soundSetting;
     public int[] unlockedLevels;
-    public LevelCollection levels;
+
 
     public PlayerData()
     {

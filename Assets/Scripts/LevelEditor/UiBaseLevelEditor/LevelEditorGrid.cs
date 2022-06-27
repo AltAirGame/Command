@@ -12,21 +12,20 @@ using UnityEngine.UI;
 public class LevelEditorGrid : MonoBehaviour
 {
     [SerializeField] private Toggle[] _toggles;
-    [SerializeField] private TMP_InputField LevelName;
-    [SerializeField] private TMP_InputField BufferSize;
-    [SerializeField] private TMP_InputField P1Size;
-    [SerializeField] private TMP_InputField P2Size;
+    [SerializeField] private DiscreteSlider BufferSize;
+    [SerializeField] private DiscreteSlider P1Size;
+    [SerializeField] private DiscreteSlider P2Size;
     [SerializeField] private TMP_Dropdown _dropdown;
     [SerializeField] private int width = 3;
     [SerializeField] private int height = 3;
     
-    [SerializeField] private Level currrentLevel;
+    [SerializeField] private LevelData currrentLevel;
     [SerializeField] private List<int> commands = new List<int>();
-    [Range(1, 8)] [SerializeField] private int mainBufferSize;
-    [Range(0, 8)] [SerializeField] private int p1BufferSize;
-    [Range(0, 8)] [SerializeField] private int p2BufferSize;
-    private PlayerData _playerData;
+    
+   
     public ICellEditor[,] Grid;
+  
+    [SerializeField]
     private RectTransform parrent;
 
     private void Start()
@@ -46,7 +45,7 @@ public class LevelEditorGrid : MonoBehaviour
         // }
         //
         // parrent = GetComponent<RectTransform>();
-        // CreatGrid();
+         CreatGrid();
     }
 
     private void CreatGrid()
@@ -99,50 +98,18 @@ public class LevelEditorGrid : MonoBehaviour
         }
     }
 
-    private void HandleBufferSizeData()
-    {
-        if (string.IsNullOrWhiteSpace(BufferSize.text))
-        {
-            mainBufferSize = 1;
-        }
-        else
-        {
-            mainBufferSize = Int32.Parse(BufferSize.text);
-            mainBufferSize = (int)Mathf.Clamp(mainBufferSize, 1, 8);
-        }
 
-        if (string.IsNullOrWhiteSpace(P1Size.text))
-        {
-            p1BufferSize = 0;
-        }
-        else
-        {
-            p1BufferSize = Int32.Parse(P1Size.text);
-            p1BufferSize = (int)Mathf.Clamp(p1BufferSize, 1, 8);
-        }
-
-        if (string.IsNullOrWhiteSpace(P2Size.text))
-        {
-            p2BufferSize = 0;
-        }
-        else
-        {
-            p2BufferSize = Int32.Parse(P2Size.text);
-            p2BufferSize = (int)Mathf.Clamp(p2BufferSize, 1, 8);
-        }
-    }
 
     public void SaveLevel()
     {
         HandleTogglesData();
-        HandleBufferSizeData();
-                              
-        if (_playerData is not null) return;
-        //First Time We want to Save level
-        _playerData = new PlayerData();
-        _playerData.levels.levels.Add(new Level(LevelName.text,commands,HandelGridData(),mainBufferSize,p1BufferSize,p1BufferSize));
-        // SavingSystem.Save("PlayerData",JsonConvert.SerializeObject(_playerData));
-        //SaveData.current.SaveInResource(json,name);
+        
+        
+      
+ 
+        DataManger.current.gameData.levels.Add(new Level(DataManger.current.gameData.levels.Count.ToString(),commands,HandelGridData(),BufferSize.CurrentValue,P1Size.CurrentValue,P2Size.CurrentValue));
+      
+       
         
     }
     
@@ -168,11 +135,11 @@ public class LevelEditorGrid : MonoBehaviour
         
     }
 
-    private void PopulateDropDown(string playerData)
+    private void PopulateDropDown()
     {
-        var PlayerData = JsonConvert.DeserializeObject<PlayerData>(playerData);
+        
         List<string> options = new List<string>();
-        foreach (var level in PlayerData.levels.levels)
+        foreach (var level in DataManger.current.gameData.levels)
         {
             options.Add(level.name);
         }

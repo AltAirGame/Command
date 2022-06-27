@@ -7,10 +7,10 @@ using Newtonsoft.Json.Linq;
 public class Level
 {
     public string name;
-    public List<ICommand> AvailableCommand=new List<ICommand>();
-    public ICommand[] LevelBufferSize;
-    public ICommand[] P1BufferSize;
-    public ICommand[] P2BufferSize;
+    public List<int> AvailableCommand=new List<int>();
+    public List<int> LevelBufferSize;
+    public List<int> P1BufferSize;
+    public List<int> P2BufferSize;
     public int[,] LevelLayout;
 
 
@@ -23,13 +23,14 @@ public class Level
     {
         
     }
-    public Level(JToken token)
+    public Level( JToken token)
     {
         
         name = Util.NullabelCaster.CastString(token["name"]);
-        var levelBufferSize = Util.NullabelCaster.CastInt(token["LevelBufferSize"]);
-        var p1BufferSize = Util.NullabelCaster.CastInt(token["LevelBufferSize"]);
-        var p2BufferSize = Util.NullabelCaster.CastInt(token["LevelBufferSize"]);
+        /*LevelBufferSize = new int[Util.NullabelCaster.CastInt(token["LevelBufferSize"])];
+        LevelBufferSize = new int[Util.NullabelCaster.CastInt(token["LevelBufferSize"])];
+        LevelBufferSize = new int[Util.NullabelCaster.CastInt(token["LevelBufferSize"])];*/
+      
         
         var first = (JArray)token["LevelLayout"];
         var second = (JArray)first[0];
@@ -50,18 +51,15 @@ public class Level
                 LevelLayout[i, j] = Util.NullabelCaster.CastInt(twoDimensionalJarray[i, j]);
             }
         }
-        
-        LevelBufferSize = new ICommand[levelBufferSize];
-        P1BufferSize = new ICommand[p1BufferSize];
-        P2BufferSize = new ICommand[p2BufferSize];
-        
+
+      
     }
         
-    public Level(List<ICommand> availableCommand,int [,] levelLayout, int bufferSize,int p1BufferSize,int p2BufferSize)
+    public Level(List<int> availableCommand,int [,] levelLayout, int bufferSize,int p1BufferSize,int p2BufferSize)
     {
         
         AvailableCommand = availableCommand;
-        LevelBufferSize = new ICommand[bufferSize];
+        
 
     }
     public Level(string name,List<int> availableCommand,int [,] levelLayout, int bufferSize,int p1BufferSize,int p2BufferSize)
@@ -76,40 +74,11 @@ public class Level
         }
 
         this.LevelLayout = levelLayout;
-        AvailableCommand=new List<ICommand>();
-        for (int i = 0; i < availableCommand.Count; i++)
-        {
-            switch (availableCommand[i])
-            {
-                case 0:
-                    AvailableCommand.Add(new MoveCommand());
-                    break;
-                case 1:
-                    AvailableCommand.Add(new JumpCommand());
-                    break;
-                case 2:
-                    AvailableCommand.Add(new TurnRightCommand());
-                    break;
-                case 3:
-                    AvailableCommand.Add(new TurnLeftCommand());
-                    break;
-                case 4:
-                    AvailableCommand.Add(new InteractCommand());
-                    break;
-                case 5:
-                    AvailableCommand.Add(new FirstBufferCommand());
-                    break;
-                    
-                case 6:
-                    AvailableCommand.Add(new SecondBufferCommand());
-               break;
-            }
+     
         }
-        LevelBufferSize = new ICommand[bufferSize];
-        P1BufferSize = new ICommand[p1BufferSize];
-        P2BufferSize = new ICommand[p2BufferSize];
+        
 
-    }
+    
 
     public Level(List<int> availableCommand, ICellEditor[,] levelLayout, int mainBufferSize, int p1BufferSize, int p2BufferSize)
     {
@@ -118,14 +87,15 @@ public class Level
 }
 
 //this Data Class is Exist In the cuz of none Serialization of abstract classes 
+[System.Serializable]
 public class LevelData
 {
-    private string name;
-    private List<int> avilableCommand = new List<int>();
-    private int levelBufferSize;
-    private int p1BufferSize;
-    private int p2BufferSize;
-    private int[,] levelLayout;
+    public string name;
+    public List<int> avilableCommand = new List<int>();
+    public int levelBufferSize;
+    public int p1BufferSize;
+    public int p2BufferSize;
+    public int[,] levelLayout;
 
     public LevelData(JToken token)
     {

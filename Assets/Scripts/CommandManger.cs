@@ -8,11 +8,31 @@ public class CommandManger : MonoBehaviour
     private int order;
     public static CommandManger current;
     public List<ICommand> CommandBuffer = new List<ICommand>();
+    public Dictionary<int, ICommand> commandLookUpTable=new Dictionary<int, ICommand>();
 
-
+    
+    
+    
     private void Awake()
     {
         current = this;
+        ConfigureLookups();
+    }
+
+    
+    //Can Be Loaded From a json File
+    public void ConfigureLookups()
+    {
+        
+        commandLookUpTable.Add(0,new MoveCommand());
+        commandLookUpTable.Add(1,new JumpCommand());
+        commandLookUpTable.Add(2,new TurnRightCommand());
+        commandLookUpTable.Add(3,new TurnLeftCommand());
+        commandLookUpTable.Add(4,new InteractCommand());
+        commandLookUpTable.Add(5,new FirstBufferCommand());
+        commandLookUpTable.Add(6,new SecondBufferCommand());
+        
+        
     }
 
     public void Play()
@@ -35,7 +55,7 @@ public class CommandManger : MonoBehaviour
     {
         CommandBuffer.Clear();
     }
-
+    
     public void AddToBuffer(ICommand command)
     {
         CommandBuffer.Add(command);
@@ -46,5 +66,6 @@ public class CommandManger : MonoBehaviour
         CommandBuffer.RemoveAt(index);
     
     }
+    
 
 }

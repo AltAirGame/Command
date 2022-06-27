@@ -22,7 +22,7 @@ public class UiManager : MonoBehaviour
     private void ShowQuitingDialogue()
     {
         ShowModalMessage(new ModalWindowData("Quit Game","Are You Sure Want To Quit ?",
-            " Yes!I Hate this Game","No,My Mistake",new SimpleHideAndShow(),
+            " Yes!I Hate this Game","No,My Mistake",new SlidInOut(),
             () => {Application.Quit();}));
     }
     //------------

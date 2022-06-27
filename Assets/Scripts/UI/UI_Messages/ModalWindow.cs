@@ -1,4 +1,5 @@
 ﻿using System;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -28,20 +29,32 @@ namespace MHamidi.UI.UI_Messages
     public class SlidInOut:IUianimation
     {
         public void Show(GameObject Subject, Action OnShow)
-        {
-            Subject.SetActive(true);
-            var startPos = new Vector3(-3 * Screen.width, .5f * Screen.height, 0);
+        {   
+            var startPos = new Vector3(.5f * Screen.width, -1.5f * Screen.height, 0);
             var targetPos = new Vector3(.5f * Screen.width, .5f * Screen.height, 0);
-            
-            OnShow?.Invoke();
+            Subject.transform.position = startPos;
+           
+            Subject.transform.DOMove(targetPos, .5f).SetEase(Ease.InOutQuad).OnComplete(() =>
+            {
+                
+                OnShow?.Invoke();
+            });
+
+       
         }
         public void Hide(GameObject Subject, Action OnHide)
         {
-            Subject.SetActive(false);
-            var startPos = Subject.transform.position;
-            var targetPos = new Vector3(-3 * Screen.width, .5f * Screen.height, 0);
             
-            OnHide?.Invoke();
+            var startPos = Subject.transform.position;
+            var targetPos =new Vector3(.5f * Screen.width, -1.5f * Screen.height, 0);
+            Subject.transform.DOMove(targetPos, .5f).SetEase(Ease.InOutQuad).OnComplete(() =>
+            {
+               
+                OnHide?.Invoke();
+                Subject.SetActive(false);
+            });
+           
+            
         }
     }
 
@@ -130,8 +143,7 @@ namespace MHamidi.UI.UI_Messages
                 : data.OnCancel;
             OnCLickOkay.onClick.AddListener(() => {OnClickCancelAction?.Invoke(); });
             OnClickCancel.onClick.AddListener(() => { OnClickCancelAction?.Invoke();});
-
-
+            Show();
         }
 
         public void Show()

@@ -3,19 +3,22 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
 [Serializable]
-public class LevelCollection
+public class GameData
 {
+    
+    
+    
     public List<Level> levels;
 
-    public LevelCollection()
+    public GameData()
     {
         levels=new List<Level>();
     }
-    public LevelCollection(string responseBody)
+    public GameData(string responseBody)
     {
            
     }
-    public LevelCollection(JObject jObject)
+    public GameData(JObject jObject)
     {
 
         var data = (JArray)jObject["levels"];

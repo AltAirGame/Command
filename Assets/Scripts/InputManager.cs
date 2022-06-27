@@ -3,19 +3,27 @@ using UnityEngine;
 
 namespace MHamidi
 {
-    public class InputManager:MonoBehaviour
+    public class InputManager : MonoBehaviour
     {
+        private void Awake()
+        {
+            Application.targetFrameRate = 60;
+            QualitySettings.vSyncCount = 2;
+        }
+
         public static event Action QuitApplication;
+
         private void Update()
         {
-
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                
-                QuitApplication?.Invoke();
-                
+                CallQuit();
             }
-            
+        }
+
+        private void CallQuit()
+        {
+            QuitApplication?.Invoke();
         }
     }
 }
