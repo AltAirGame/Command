@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using UnityEngine;
 
 [Serializable]
 public class GameData
@@ -20,12 +21,24 @@ public class GameData
     }
     public GameData(JObject jObject)
     {
-        var data = (JArray)jObject["levels"];
-        foreach (var token in data)
+        
+        
+        if (jObject is null)
         {
-            var level = new Level(token);
-            levels.Add(level);
+            Debug.Log($" Data is Null");
+            levels = new List<Level>();
+            
+        }
+        else
+        {              //Nullabel Caster for JArray 
+            var data = (JArray)jObject["levels"];    
 
+            foreach (var token in data)
+            {
+                var level = new Level(token);
+                levels.Add(level);
+
+            }
         }
     }
     

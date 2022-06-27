@@ -19,6 +19,7 @@ namespace MHamidi
     }
 
 //notification Channel    
+    [DefaultExecutionOrder(-1)]
     public class DataManger : MonoBehaviour, IData
     {
 
