@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using MHamidi;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -30,9 +31,8 @@ public class GameData
             
         }
         else
-        {              //Nullabel Caster for JArray 
-            var data = (JArray)jObject["levels"];    
-
+        {               
+            var data = Util.NullabelCaster.CastJArray((JArray)jObject["levels"]);
             foreach (var token in data)
             {
                 var level = new Level(token);

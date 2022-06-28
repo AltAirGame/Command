@@ -1,6 +1,8 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.IO;
 using System.Text;
+using JetBrains.Annotations;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -25,6 +27,13 @@ namespace MHamidi
 
         public static class NullabelCaster
         {
+
+            public static JArray CastJArray(JToken? data)
+            {
+                return (JArray)data ?? new JArray();
+                
+            }
+
             public static int CastInt(JToken? data)
             {
                 return (int?)data ?? 0;
