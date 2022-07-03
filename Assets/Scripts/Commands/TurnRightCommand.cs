@@ -10,9 +10,7 @@ namespace MHamidi
             get { return this.GetType().Name.ToLower(); }
             set { }
         }
-
-        public bool executeWaseSuccesful { get; set; }
-
+        public bool executeWasSuccessful { get; set; }
         public void Execute(GameObject subject)
         {
             TurnRight(subject);
@@ -22,13 +20,9 @@ namespace MHamidi
         {
             TurnLeft(subject);
         }
-
-        
-
         private void TurnRight(GameObject subject)
         {
             subject.transform.Rotate(Vector3.up,90);
-            
         }
 
         private void TurnLeft(GameObject subject)

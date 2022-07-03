@@ -15,11 +15,11 @@ public class MoveCommand : ICommand
         set { }
     }
 
-    public bool executeWaseSuccesful { get; set; }
+    public bool executeWasSuccessful { get; set; }
 
     public void Execute(GameObject subject)
     {
-        executeWaseSuccesful=MoveForward(subject);
+        executeWasSuccessful=MoveForward(subject);
     }
 
     public void Undo(GameObject subject)
@@ -45,9 +45,9 @@ public class MoveCommand : ICommand
     
     private void MoveBackWard(GameObject subject)
     {
-        if (!executeWaseSuccesful) return;
+        if (!executeWasSuccessful) return;
         subject.transform.position = subject.transform.position + subject.transform.forward;
-        executeWaseSuccesful = false;
+        executeWasSuccessful = false;
 
 
 

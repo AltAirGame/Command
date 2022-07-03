@@ -6,7 +6,7 @@ namespace MHamidi
     {
        
         public string name { get; set; }
-        public bool executeWaseSuccesful { get; set; }
+        public bool executeWasSuccessful { get; set; }
 
         public void Execute(GameObject subject)
         {
