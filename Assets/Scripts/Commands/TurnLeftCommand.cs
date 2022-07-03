@@ -10,6 +10,8 @@ namespace MHamidi
             set { }
         }
 
+        public bool executeWaseSuccesful { get; set; }
+
         public void Execute(GameObject subject)
         {
             TurnLeft(subject);

@@ -2,6 +2,7 @@
 
 namespace MHamidi
 {
+    
     public class TurnRightCommand : ICommand
     {
         public string name
@@ -9,6 +10,8 @@ namespace MHamidi
             get { return this.GetType().Name.ToLower(); }
             set { }
         }
+
+        public bool executeWaseSuccesful { get; set; }
 
         public void Execute(GameObject subject)
         {

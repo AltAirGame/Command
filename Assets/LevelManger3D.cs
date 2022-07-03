@@ -10,9 +10,9 @@ public interface ILevelManger
 {
     void Interact();
     void CreatLevel(Level level, Action<GameObject> Playerreference);
-    bool MoveValidation(Vector3Int target);
-    public void Jump();
-    public void JumpBack();
+    bool MoveValidation();
+    public bool Jump();
+    public bool JumpBack();
 }
 
 public class LevelManger3D : MonoBehaviour, ILevelManger
@@ -27,7 +27,6 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
     private GameCell[,] gameCells;
     public GameObject Player;
     [SerializeField] private GameObject PlayerPrefab;
-
     public static ILevelManger Instance;
 
     private void Awake()
@@ -38,13 +37,10 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
 
     private void OnEnable()
     {
-        CommandManger.ResetPlayerPosition += ResetPlayer;
     }
-
 
     private void OnDisable()
     {
-        CommandManger.ResetPlayerPosition -= ResetPlayer;
     }
 
     public void CreatLevel(Level level, Action<GameObject> Playerreference)
@@ -149,36 +145,29 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
         cell.transform.DOMove(new Vector3(i, 0, j), .8f).SetEase(ease);
     }
 
-
-    private void ResetPlayer()
+    public bool MoveValidation()
     {
-        Player.transform.position = new Vector3(currentLevel.startX, 0, currentLevel.startY);
+        return MoveAble();
     }
 
-
-    public bool MoveValidation(Vector3Int targetPosition)
-    {
-        return NotEmpty(targetPosition);
-        //
-    }
-
-
-    public void Jump()
+    public bool Jump()
     {
         var j = GetJump();
         StartCoroutine(JumpForwardAction(j));
+        return j != 0;
     }
 
-    public void JumpBack()
+    public bool JumpBack()
     {
         var j = GetJumpBack();
         StartCoroutine(JumpBackAction(j));
+        return j != 0;
     }
 
     public int GetJump()
     {
         var JumpDirectionPosition = Vector3Int.FloorToInt(Player.transform.position - Player.transform.forward);
-        var JumpDirectionValue = currentLevel.LevelLayout[JumpDirectionPosition.x, JumpDirectionPosition.z];
+        var JumpDirectionValue = GetFrontOfPlayerValue();
         var PlayePositionValue =
             currentLevel.LevelLayout[(int)Player.transform.position.x, (int)Player.transform.position.z];
 
@@ -268,7 +257,8 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
 
         return 0;
     }
-     public int GetJumpBack()
+
+    public int GetJumpBack()
     {
         var FrontOfPlayer = Vector3Int.FloorToInt(Player.transform.position + Player.transform.forward);
         var FronOfPlayerPosition = currentLevel.LevelLayout[FrontOfPlayer.x, FrontOfPlayer.z];
@@ -362,7 +352,6 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
         return 0;
     }
 
-
     public void Interact()
     {
         if (currentLevel.LevelLayout[(int)Player.transform.position.x, (int)Player.transform.position.z] % 2 == 0)
@@ -375,9 +364,9 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
     {
         float t = 0;
 
-        Vector3 p0 = Vector3Int.FloorToInt(Player.transform.position);
-        Vector3 p1 = Vector3Int.FloorToInt( new Vector3(p0.x, p0.y + 1, p0.z));
-        Vector3 p2 = Vector3Int.FloorToInt( new Vector3(p0.x + 1, p0.y +1, p0.z));
+        Vector3 p0 = (Player.transform.position);
+        Vector3 p1 = new Vector3(p0.x, p0.y + 1, p0.z);
+        Vector3 p2 = new Vector3(p0.x + 1, p0.y + 1, p0.z);
         Vector3 p3 = p0;
 
         switch (target)
@@ -388,17 +377,19 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
                 break;
             case 1:
 
-                p3 = new Vector3(p0.x, p0.y + .15f, p0.z - 1);
+                p3 = (new Vector3(p0.x, p0.y + .15f, p0.z) - (Player.transform.forward));
+                Util.ShowMessag($"JUMP-UP");
                 break;
             case -1:
-                p3 = new Vector3(p0.x, p0.y - .15f, p0.z- 1);
+                p3 = (new Vector3(p0.x, p0.y - .15f, p0.z) - (Player.transform.forward));
+                Util.ShowMessag($"JUMP-DOWN");
                 break;
         }
 
         while (Vector3.Distance(Player.transform.position, p3) > 0)
         {
             Player.transform.position = CalculateCubicBezierCurve(t, p0, p1, p2, p3);
-            t += Time.deltaTime*3; // we Can Add ease Here
+            t += Time.deltaTime * 3; // we Can Add ease Here
             if (t > .99f)
             {
                 t = 1;
@@ -409,13 +400,14 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
 
         Util.ShowMessag($"jump Ended");
     }
+
     public IEnumerator JumpBackAction(int target)
     {
         float t = 0;
 
         var p0 = Player.transform.position;
         var p1 = new Vector3(p0.x, p0.y + 1, p0.z);
-        var p2 = new Vector3(p0.x + 1, p0.y +1, p0.z);
+        var p2 = new Vector3(p0.x + 1, p0.y + 1, p0.z);
         var p3 = p0;
 
         switch (target)
@@ -425,18 +417,19 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
                 p3 = p0;
                 break;
             case 1:
-
-                p3 = new Vector3(p0.x, p0.y + .15f, p0.z +1);
+                p3 = (new Vector3(p0.x, p0.y + .15f, p0.z) + (Player.transform.forward));
+                Util.ShowMessag($"JUMP-UP");
                 break;
             case -1:
-                p3 = new Vector3(p0.x, p0.y - .15f, p0.z+ 1);
+                p3 = (new Vector3(p0.x, p0.y - .15f, p0.z) + (Player.transform.forward));
+                Util.ShowMessag($"JUMP-DOWN");
                 break;
         }
 
         while (Vector3.Distance(Player.transform.position, p3) > 0)
         {
             Player.transform.position = CalculateCubicBezierCurve(t, p0, p1, p2, p3);
-            t += Time.deltaTime*3; // we Can Add ease Here
+            t += Time.deltaTime * 3; // we Can Add ease Here
             if (t > .99f)
             {
                 t = 1;
@@ -468,15 +461,50 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
         return c;
     }
 
-    private bool NotEmpty(Vector3Int targetPosition)
+    private bool NotEmpty()
     {
-        if (currentLevel.LevelLayout[targetPosition.x, targetPosition.z] == 0)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        var front = GetFrontOfPlayerPosition();
+        return currentLevel.LevelLayout[(int)front.x, (int)front.z] != 0;
+    }
+
+    private bool MoveAble()
+    {
+        if (!NotJumpAble()) return false;
+        var JumpDirectionValue = GetFrontOfPlayerValue();
+        var PlayePositionValue = GetPlayerPositionValue();
+        return Mathf.Abs(JumpDirectionValue - PlayePositionValue) <= 1;
+    }
+
+    private bool NotJumpAble()
+    {
+        return GetJump() == 0;
+    }
+
+    private Vector3Int GetFrontOfPlayerPosition()
+    {
+        return Vector3Int.FloorToInt(Player.transform.position - Player.transform.forward);
+    }
+
+    private Vector3Int GetBackOfPlayerPosition()
+    {
+        return Vector3Int.FloorToInt(Player.transform.position + Player.transform.forward);
+    }
+
+    private int GetFrontOfPlayerValue()
+    {
+        var front = GetFrontOfPlayerPosition();
+        return currentLevel.LevelLayout[front.x, front.z];
+    }
+
+    private int GetBackOfPlayerValue()
+    {
+        var back = GetBackOfPlayerPosition();
+        return currentLevel.LevelLayout[back.x, back.z];
+    }
+
+    private int GetPlayerPositionValue()
+    {
+        var position = Player.transform.position;
+        return currentLevel.LevelLayout[(int)position.x, (int)position.z];
     }
 }

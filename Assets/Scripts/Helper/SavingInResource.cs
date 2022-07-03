@@ -39,8 +39,8 @@ namespace Helper
             var correctedPath = Path.ChangeExtension(path, null);
             
 
-            var someSting = Resources.Load<TextAsset>(correctedPath);
-            var st = someSting.text;
+            var someString = Resources.Load<TextAsset>(correctedPath);
+            var st = someString.text;
             
                 response.body = st;
                 if (response.body == "null")

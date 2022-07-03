@@ -67,8 +67,9 @@ public class CommandManger : MonoBehaviour
     {   
        
         ChangePlayButtonInteractivityStatus?.Invoke();
-        StartCoroutine(PlayWithDelay());
         UpdatePlay?.Invoke(() => { Rewind();},"Rewind");
+        StartCoroutine(PlayWithDelay());
+        
     }
 
     private IEnumerator PlayWithDelay()
@@ -85,19 +86,24 @@ public class CommandManger : MonoBehaviour
     public void Rewind()
     {
         ChangePlayButtonInteractivityStatus?.Invoke();
+        UpdatePlay?.Invoke(() => { Play();},"Play");
+        StartCoroutine(RewindWithDelay());
+       
+    }
+
+    private IEnumerator RewindWithDelay()
+    {
+        
         foreach (var item in Enumerable.Reverse(CurrentCommandBuffer))
         {
             item.Undo(subjectOFCommand);
-        }  
-        
-      
-        
+            yield return new WaitForSeconds(.4f);
+        }
         ChangePlayButtonInteractivityStatus?.Invoke(); 
-        UpdatePlay?.Invoke(() => { Play();},"Play");
+       
     }
-    
 
-    
+
     public void RestCurrentCommand()
     {
         CurrentCommandBuffer.Clear();
