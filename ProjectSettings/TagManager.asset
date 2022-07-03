@@ -7,6 +7,10 @@ TagManager:
   - Cell
   - EditorCell
   - Modal
+  - Cell2
+  - Cell3
+  - GameButton
+  - Buffer
   layers:
   - Default
   - TransparentFX

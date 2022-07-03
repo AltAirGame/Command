@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using Newtonsoft.Json.Linq;
@@ -20,7 +21,7 @@ namespace MHamidi
     public static class Util
     {
         public static bool IsLoging = true;
-
+        public static event Action<string> Log;
         static Util()
         {
         }
@@ -30,8 +31,38 @@ namespace MHamidi
 
             public static JArray CastJArray(JToken? data)
             {
-                return (JArray)data ?? new JArray();
+                if ( data is null )
+                {
+                    return new JArray();
+                }
+                else
+                {
+                    
                 
+                if (data.HasValues)
+                {
+                    if (data is JArray)
+                    {
+
+                        if (data.AsJEnumerable().Count()==0)
+                        {
+
+                            return new JArray();
+                        }
+                        else
+                        {
+                            return (JArray)data;
+                        }
+                        
+                    }
+                }
+                else
+                {
+                    return new JArray();
+                }
+                }
+
+                return new JArray();
             }
 
             public static int CastInt(JToken? data)
@@ -94,7 +125,12 @@ namespace MHamidi
                     break;
             }
 #endif
+            Log?.Invoke(message);
         }
 
+        public static string GetResureceDataPath(string saveFile)
+        {
+            return Path.Combine("Resources/Save/" + saveFile);
+        }
     }
 }

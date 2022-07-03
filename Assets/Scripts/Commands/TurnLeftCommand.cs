@@ -1,4 +1,6 @@
-﻿namespace MHamidi
+﻿using UnityEngine;
+
+namespace MHamidi
 {
     public class TurnLeftCommand : ICommand
     {
@@ -8,23 +10,25 @@
             set { }
         }
 
-        public void Execute()
+        public void Execute(GameObject subject)
         {
-            TurnLeft();
+            TurnLeft(subject);
         }
 
-        public void Undo()
+        public void Undo(GameObject subject)
         {
-            TurnRight();
+            TurnRight(subject);
         }
 
-        private void TurnRight()
+     
+        private void TurnRight(GameObject subject)
         {
-            Util.ShowMessag($" [ Turn Right ] ", TextColor.Yellow);
+          subject.transform.Rotate(Vector3.up,90);
+            
         }
 
-        private void TurnLeft()
-        {   Util.ShowMessag($" [ Turn Left ] ", TextColor.Red);
+        private void TurnLeft(GameObject subject)
+        {  subject.transform.Rotate(Vector3.up,-90);
         }
     }
 }

@@ -22,8 +22,8 @@ public class GameData
     }
     public GameData(JObject jObject)
     {
-        
-        
+
+        levels = new List<Level>();
         if (jObject is null)
         {
             Debug.Log($" Data is Null");
@@ -33,13 +33,33 @@ public class GameData
         else
         {               
             var data = Util.NullabelCaster.CastJArray((JArray)jObject["levels"]);
-            foreach (var token in data)
+            if (data is null)
             {
-                var level = new Level(token);
-                levels.Add(level);
-
+                
             }
+            else
+            {
+                if (data.Count==0)
+                {
+                    
+                    
+                }
+                else
+                {
+                    foreach (var token in data)
+                    {
+                        var level = new Level(token);
+                        levels.Add(level);
+
+                    }
+                }
+            }
+           
         }
     }
-    
+
+    public Level GetLevel(int dropdownValue)
+    {
+        return levels[dropdownValue];
+    }
 }

@@ -21,12 +21,18 @@ public enum CellType
 public class LevelEditorCell : MonoBehaviour,ICellEditor
 {
     
-
+    
     [SerializeField]private Image Background;
+    [SerializeField] private Image StartIcon;
     [SerializeField]Sprite[] icons;
     public void Interact()
     {
        ChangeValue();
+    }
+
+    public void InteractionTwo()
+    {
+        SetAsStart();
     }
 
     private void Start()
@@ -35,12 +41,27 @@ public class LevelEditorCell : MonoBehaviour,ICellEditor
     }
 
     public CellType type { get; set; }
+    public bool IsStart { get; set; }
     public int cellType { get; set; } //Can Be Used In Replace of An Enmum 
 
     public void SetValue(CellType type)
     {
         this.type = type;
         UpdateView();
+    }
+
+    public void SetValue(int type)
+    {
+        cellType = type;
+        UpdateView();
+    }
+
+    public void SetAsStart()
+    {
+        IsStart = !IsStart;
+        var startIconDisplay = IsStart ?true : false;
+        StartIcon.gameObject.SetActive(startIconDisplay);
+
     }
 
     public void ChangeValue()

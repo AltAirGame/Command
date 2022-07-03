@@ -18,36 +18,22 @@ public class LevelEditorGrid : MonoBehaviour
     [SerializeField] private TMP_Dropdown _dropdown;
     [SerializeField] private int width = 3;
     [SerializeField] private int height = 3;
-    
-    [SerializeField] private LevelData currrentLevel;
+
+    [SerializeField] private Level currrentLevel;
     [SerializeField] private List<int> commands = new List<int>();
-        
+
     public DataManger dataManger;
     public ICellEditor[,] Grid;
     public int[,] grid;
-  
-    [SerializeField]
-    private RectTransform parrent;
+    public Vector2Int StartPos=Vector2Int.zero;
+    [SerializeField] private RectTransform parrent;
 
     private void Start()
     {
-        // var json = SavingSystem.Load("PlayerData");
-        // if (string.IsNullOrWhiteSpace(json))
-        // {
-        //     _dropdown.ClearOptions();
-        //     _playerData = null;
-        // }
-        // else
-        // {
-        //     
-        //     PopulateDropDown(json);
-        //     //We Had Saved levels
-        //     //We Load the last Level
-        // }
-        //
-        // parrent = GetComponent<RectTransform>();
-         dataManger ??= GetComponent<DataManger>();
-         CreatGrid();
+        dataManger ??= DataManger.Instance;
+
+        PopulateDropDown();
+        CreatGrid();
     }
 
     private void CreatGrid()
@@ -102,50 +88,109 @@ public class LevelEditorGrid : MonoBehaviour
     }
 
 
-
     public void SaveLevel()
     {
         HandleTogglesData();
         UpdateGrid(grid);
-        dataManger ??= GetComponent<DataManger>();
-        DataManger.instance.AddTOLevels(new Level(DataManger.instance.gameData.levels.Count.ToString(),commands,grid,BufferSize.CurrentValue,P1Size.CurrentValue,P2Size.CurrentValue));
-        
-
+        dataManger.AddTOLevels(new Level(_dropdown.value, commands, grid, BufferSize.CurrentValue, P1Size.CurrentValue,
+            P2Size.CurrentValue,StartPos.x,StartPos.y));
+        PopulateDropDown();
     }
-    
-    private void  UpdateGrid(int [,] grid)
+
+    public void SaveNewLevel()
     {
-        
+        HandleTogglesData();
+        UpdateGrid(grid);
+        dataManger.AddTOLevels(new Level(_dropdown.options.Count, commands, grid, BufferSize.CurrentValue,
+            P1Size.CurrentValue, P2Size.CurrentValue,StartPos.x,StartPos.y));
+        PopulateDropDown();
+    }
+
+    private void UpdateGrid(int[,] grid)
+    {
         for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
             {
-                grid[i, j] = Grid[i, j].cellType;
+                grid[j, i] = Grid[j, i].cellType;
+                if (Grid[i,j].IsStart)
+                {
+                    StartPos = new Vector2Int(i, j);
+                }
             }
         }
-            
-       
+    }
+
+    private IEnumerator UpdateBoard()
+    {
+        for (int i = 0; i < width; i++)
+        {
+            for (int j = 0; j < height; j++)
+            {
+                Grid[i, j].SetValue(currrentLevel.LevelLayout[i,j]);
+                if (currrentLevel.startX==i&&currrentLevel.startY==j)
+                {
+                    Grid[i,j].SetAsStart();
+                }
+                yield return new WaitForSeconds(.05f);
+            }
+        }
     }
 
 
     public void LoadLevel()
     {
-        
-        //Some How Must Get the Value In Drop Down And Load the Grid 
-        
+        currrentLevel = dataManger.gameData.GetLevel(_dropdown.value);
+
+        UpdateUi(currrentLevel);
+        StartCoroutine(UpdateBoard());
+    }
+
+    private void UpdateUi(Level level)
+    {
+        UpdateToggles(level);
+        UpdateBuffers(level);
+    }
+
+    private void UpdateBuffers(Level currentLevel)
+    {
+        BufferSize.SetCurrentValue(currentLevel.maxBufferSize);
+        P1Size.SetCurrentValue(currentLevel.maxP1Size);
+        P2Size.SetCurrentValue(currentLevel.maxP2Size);
+    }
+    
+    private void UpdateToggles(Level currentLevel)
+    {
+        TurnOffAllToggles();
+        for (int i = 0; i < currentLevel.AvailableCommand.Count; i++)
+        {
+            TurnOnTogglesByIndex(currentLevel.AvailableCommand[i]);
+        }
+    }
+
+    private void TurnOnTogglesByIndex( int index)
+    {
+        _toggles[index].isOn = true;
+    }
+
+    private void TurnOffAllToggles()
+    {
+        for (int i = 0; i < _toggles.Length; i++)
+        {
+            _toggles[i].isOn = false;
+        }
     }
 
     private void PopulateDropDown()
     {
-        
         List<string> options = new List<string>();
-        foreach (var level in DataManger.instance.gameData.levels)
+
+        foreach (var level in dataManger.gameData.levels)
         {
-            options.Add(level.name);
+            options.Add(level.number.ToString());
         }
+
         _dropdown.ClearOptions();
         _dropdown.AddOptions(options);
     }
-
-  
 }

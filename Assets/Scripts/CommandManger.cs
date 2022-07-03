@@ -1,15 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using MHamidi;
 using UnityEngine;
-
+using System;
 public class CommandManger : MonoBehaviour
 {
+    
+    
+    public static event Action<Action, string> UpdatePlay;
+    public static event Action ChangePlayButtonInteractivityStatus;
+    public static event Action ResetPlayerPosition;
+    
     private int order;
+    public GameObject subjectOFCommand;
     public static CommandManger current;
-    public List<ICommand> CommandBuffer = new List<ICommand>();
+    
+    //A Pointer To Correc Command Buffer
+    public List<ICommand> CurrentCommandBuffer;
+    public List<ICommand> MainCommand=new List<ICommand>();
+    public List<ICommand> P1Command=new List<ICommand>();
+    public List<ICommand> p2Command =new List<ICommand>();
     public Dictionary<int, ICommand> commandLookUpTable=new Dictionary<int, ICommand>();
-
+    
     
     
     
@@ -19,7 +32,22 @@ public class CommandManger : MonoBehaviour
         ConfigureLookups();
     }
 
-    
+    public void SetSubjectOfCommand(GameObject subjectRefrence)
+    {
+        subjectOFCommand = subjectRefrence;
+        ClearAllBuffers();
+        SetCurrentBuffer(MainCommand);
+        
+        UpdatePlay?.Invoke(() => { Play();},"PlayGame");
+    }
+
+    private void ClearAllBuffers()
+    {
+        MainCommand.Clear();
+        P1Command.Clear();
+        p2Command.Clear();
+    }
+
     //Can Be Loaded From a json File
     public void ConfigureLookups()
     {
@@ -36,36 +64,62 @@ public class CommandManger : MonoBehaviour
     }
 
     public void Play()
+    {   
+       
+        ChangePlayButtonInteractivityStatus?.Invoke();
+        StartCoroutine(PlayWithDelay());
+        UpdatePlay?.Invoke(() => { Rewind();},"Rewind");
+    }
+
+    private IEnumerator PlayWithDelay()
     {
-        foreach (var item in CommandBuffer)
+     
+        foreach (var item in CurrentCommandBuffer)
         {
-            item.Execute();
+            item.Execute(subjectOFCommand);
+            yield return new WaitForSeconds(.4f);
         }
+        ChangePlayButtonInteractivityStatus?.Invoke(); 
     }
 
     public void Rewind()
     {
-        foreach (var item in Enumerable.Reverse(CommandBuffer))
+        ChangePlayButtonInteractivityStatus?.Invoke();
+        foreach (var item in Enumerable.Reverse(CurrentCommandBuffer))
         {
-            item.Undo();
+            item.Undo(subjectOFCommand);
         }  
-    }
-
-    public void Rest()
-    {
-        CommandBuffer.Clear();
+        
+      
+        
+        ChangePlayButtonInteractivityStatus?.Invoke(); 
+        UpdatePlay?.Invoke(() => { Play();},"Play");
     }
     
-    public void AddToBuffer(ICommand command)
+
+    
+    public void RestCurrentCommand()
     {
-        CommandBuffer.Add(command);
-        Util.ShowMessag(command.name,TextColor.White);
+        CurrentCommandBuffer.Clear();
+    }
+    
+    public void AddToCurrentBuffer(ICommand command)
+    {
+        
+        CurrentCommandBuffer.Add(command);
+
+        
+        
     }
     public void RemoveFromBuffer(int index)
     {
-        CommandBuffer.RemoveAt(index);
+        CurrentCommandBuffer.RemoveAt(index);
     
     }
-    
 
+
+    public void SetCurrentBuffer(List<ICommand> Bufer)
+    {
+        CurrentCommandBuffer = Bufer;
+    }
 }

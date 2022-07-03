@@ -18,25 +18,29 @@ namespace MHamidi
 
     }
 
-//notification Channel    
-    [DefaultExecutionOrder(-1)]
+
     public class DataManger : MonoBehaviour, IData
     {
 
 
-        public static DataManger instance;
+
+        public static DataManger Instance;
 
         private void Awake()
         {
-            instance = this;
+            Instance = this;
         }
 
-        private const string playerDataName = "Player";
-        private const string gameDataName = "Game";
+        private const string playerDataName = "Player.txt";
+        private const string gameDataName = "Game.txt";
         public PlayerData playerData { get; set; }
         public GameData gameData { get; set; }
         public void AddTOLevels(Level level)
         {
+            if (gameData is null)
+            {
+                gameData = new GameData();
+            }
 
             if (gameData.levels is null)
             {
@@ -45,7 +49,7 @@ namespace MHamidi
             }
             else
             {
-                var name = Int32.Parse(level.name);
+                var name = level.number;
                 if (name<gameData.levels.Count)
                 {
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,63 +8,82 @@ namespace MHamidi
     public class GameManger : MonoBehaviour
     {
         
-        //List of Work
-        //Handel Player Input Such As Exit 
-        //
-        //
-        //
-        //
-        //
+        // Start A Level
+        // Start Next Level 
+        //....
+
+
+
+        public static event Action<List<int>> UpdatePlayerInput;
+        public static event Action<int, int, int> UpdateBufferUi;
+
         
-        
-        
-        
-        
+
+
+
+        public bool played=false;
+        private DataManger dataManger;
+        private ILevelManger _levelManger;
         public List<Level> levels;
         [SerializeField] private RectTransform mechanicParrent;
         public GameButton ButtonPrefab;
 
+        private void Awake()
+        {
+            _levelManger = GetComponent<ILevelManger>();
+            dataManger=DataManger.Instance;
+        }
+
         private void Start()
         {
-         
+
           
-
-           // StartLevel(0);
+            
         }
 
-        
-        private void StartLevel(int i)
+        public void StartLevelZero()
         {
-            //SetUp the Level By Level Object 
-            //The Ui Must be Update By Level Detail
-            //Each Level has it's Own Buffer Size
-            //Each level has A P1 Buffer
-            //Each Level Has A P2 Buffer
-
-
-            foreach (var item in levels[i].AvailableCommand)
+            if (dataManger is not null)
             {
-                var button = Instantiate(ButtonPrefab, mechanicParrent);
-                var command = CommandManger.current.commandLookUpTable[item];
-                button.SetListener(() => { CommandManger.current.AddToBuffer(command); });
-                var icon = Resources.Load<Sprite>(command.name);
-                button.SetIcon(icon);
-
-
-                button.gameObject.name = command.name;
+                StartLevel(dataManger.gameData.GetLevel(0));    
             }
+
+            else
+            {
+                Util.ShowMessag($"DataManger is null");
+            }
+
         }
 
-        private void Update()
+        private void StartLevel(Level level)
         {
-            if (Input.GetKeyDown(KeyCode.B))
+            if (_levelManger is not null)
             {
-                CommandManger.current.Rewind();
+                _levelManger.CreatLevel(level,CommandManger.current.SetSubjectOfCommand); //Start A Level 
+                UpdatePlayerInputUI(level.AvailableCommand);
+                UpdateLevelBufferUi(level.maxBufferSize,level.maxP1Size,level.maxP2Size);
             }
-            else if (Input.GetKeyDown(KeyCode.P))
+            else
             {
-                CommandManger.current.Play();
+                Util.ShowMessag($"LevelManger is null");
             }
+           
+            
+         
+            
+
+        }
+
+        private void UpdateLevelBufferUi(int bufferSize,int p1Size,int p2Size)
+        {
+            
+            UpdateBufferUi?.Invoke(bufferSize,p1Size,p2Size);
+        }
+
+        private void UpdatePlayerInputUI(List<int> avilableCommand)
+        {
+            UpdatePlayerInput?.Invoke(avilableCommand);
+          
         }
     }
 }

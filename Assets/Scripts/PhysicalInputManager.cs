@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MHamidi
 {
-    public class InputManager : MonoBehaviour
+    public class PhysicalInputManager : MonoBehaviour
     {
         private void Awake()
         {

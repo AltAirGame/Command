@@ -1,4 +1,6 @@
-﻿using MHamidi;
+﻿using DG.Tweening;
+using MHamidi;
+using UnityEngine;
 
 
 public class MoveCommand : ICommand
@@ -13,23 +15,31 @@ public class MoveCommand : ICommand
         set { }
     }
 
-    public void Execute()
+    public void Execute(GameObject subject)
     {
-        MoveForward();
+     MoveForward(subject);
     }
 
-    public void Undo()
+    public void Undo(GameObject subject)
     {
-        MoveBackWard();
+        MoveBackWard(subject);
     }
 
-    private void MoveForward()
+
+
+    private void MoveForward(GameObject subject)
     {
-        Util.ShowMessag($" [ MoveForward ] ", TextColor.Red);
+        var target=subject.transform.position - subject.transform.forward;
+        if (LevelManger3D.Instance.MoveValidation(new Vector3Int((int)target.x,(int)target.y,(int)target.z)))
+        {
+            subject.transform.DOMove(target, .2f);
+        }
+        subject.GetComponentInChildren<IPlayerAnimation>().Walk();
+        
     }
 
-    private void MoveBackWard()
+    private void MoveBackWard(GameObject subject)
     {
-        Util.ShowMessag($" [ MoveBack ] ", TextColor.Yellow);
+        subject.transform.position = subject.transform.position + subject.transform.forward;
     }
 }

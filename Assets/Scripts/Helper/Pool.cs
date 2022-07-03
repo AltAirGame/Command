@@ -48,7 +48,7 @@ namespace MHamidi.Helper
                     }
                     else
                     {
-                        Util.ShowMessag($" No Item In Pool with this Tag !");
+                        /*Util.ShowMessag($" No Item In Pool with this Tag !");*/
                     }
 
                 }
@@ -80,7 +80,7 @@ namespace MHamidi.Helper
                 {
                     for (int j = 0; j < items[i].Amount; j++)
                     {
-                        GameObject obj = Instantiate(items[i].prefab);
+                        GameObject obj = Instantiate(items[i].prefab,transform);
                         PooledItems.Add(obj);
                         obj.SetActive(false);
                     }

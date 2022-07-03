@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using MHamidi;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace Helper
@@ -26,6 +27,7 @@ namespace Helper
 
             response.isSuccess = true;
             response.message = $"We Saved To {path}";
+            Util.ShowMessag($"{response.message}",TextColor.Yellow);
             response.body = "Okay";
             return response;
         }
@@ -39,6 +41,7 @@ namespace Helper
                 response.body = String.Empty;
                 response.isSuccess = false;
                 response.message = "There is No File in the Directory";
+                Util.ShowMessag($"{response.message}",TextColor.Yellow);
                 return response;
             }
 
@@ -53,14 +56,22 @@ namespace Helper
                     response.body = String.Empty;
                     response.isSuccess = false;
                     response.message = "The Loaded String Is Empty Or Null";
+                    Util.ShowMessag($"{response.message}",TextColor.Yellow);
                     return response;
                 }
                 else
                 {
                     response.body = st;
-
+                    if (response.body=="null")
+                    {
+                        //there is A Bad Saved File So W Must Make A Default type to Load
+                        var gameData = new GameData();
+                        st = JsonConvert.SerializeObject(gameData);
+                        response.body = st;
+                    }
                     response.isSuccess = true;
                     response.message = "No Error";
+                    Util.ShowMessag($"{response.message}",TextColor.Yellow);
 
                     return response;
                 }

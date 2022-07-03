@@ -1,4 +1,6 @@
-﻿namespace MHamidi
+﻿using UnityEngine;
+
+namespace MHamidi
 {
     public class InteractCommand : ICommand
     {
@@ -8,9 +10,22 @@
             set { }
         }
 
+        public void Execute(GameObject subject)
+        {
+          Interact();
+          subject.GetComponentInChildren<IPlayerAnimation>().InterAct();
+        }
+
+        public void Undo(GameObject subject)
+        {
+            ReverceInteract();
+            subject.GetComponentInChildren<IPlayerAnimation>().InterAct();
+        }
+
         public void Execute()
         {
             Interact();
+            
         }
 
         public void Undo()
@@ -20,11 +35,12 @@
 
         public void Interact()
         {
-            Util.ShowMessag($" [ Interact ] ", TextColor.Red);
+            LevelManger3D.Instance.Interact();
+            
         }
         public void ReverceInteract()
         {
-            Util.ShowMessag($" [ Interact ] ", TextColor.Yellow);
+            LevelManger3D.Instance.Interact();
         }
     }
 }

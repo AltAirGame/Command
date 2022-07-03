@@ -1,4 +1,6 @@
-﻿namespace MHamidi
+﻿using UnityEngine;
+
+namespace MHamidi
 {
     public class JumpCommand : ICommand
     {
@@ -8,22 +10,33 @@
             set { }
         }
 
-        public void Execute()
+        public void Execute(GameObject subject)
         {
-            Jump();
+            Util.ShowMessag($" Jump");
+            Jump(subject);
+            subject.GetComponentInChildren<IPlayerAnimation>().Jump();
+            
         }
 
-        public void Undo()
+        public void Undo(GameObject subject)
         {
-            RevercJump();
+            Util.ShowMessag($"Jump Undo");
+            RevercJump(subject);
+            subject.GetComponentInChildren<IPlayerAnimation>().Jump();
+
         }
 
-        private void Jump()
+        private void Jump(GameObject subject)
         {
-            Util.ShowMessag($" [ Jump ] ", TextColor.Red);
-        }   private void RevercJump()
-        {
-            Util.ShowMessag($" [ Jump ] ", TextColor.Yellow);
+            LevelManger3D.Instance.Jump();
         }
+
+        private void RevercJump(GameObject subject)
+        {
+            LevelManger3D.Instance.JumpBack();
+        }
+        
+     
+        
     }
 }

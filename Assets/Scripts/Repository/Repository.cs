@@ -32,7 +32,9 @@ namespace MHamidi
             var response = _resources.Load(saveDestination);
             if (response.isSuccess)
             {
-                levelCollectionResponse.data = new GameData(JObject.Parse(response.body));//Leveldata->Level
+                var jObject=JObject.Parse(response.body);
+                
+                levelCollectionResponse.data = new GameData(jObject);//Leveldata->Level
                 levelCollectionResponse.error = new Error();
             }
             else

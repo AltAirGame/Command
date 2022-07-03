@@ -1,9 +1,11 @@
 using System;
+using UnityEngine;
+
 
 public interface ICommand
 {
     public string name { get; set; }
   
-    void Execute();
-    void Undo();
+    void Execute(GameObject subject);
+    void Undo(GameObject subject);
 }
