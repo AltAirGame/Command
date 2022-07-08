@@ -18,6 +18,12 @@ namespace MHamidi
         Yellow,
         Black
     }
+    public enum Direction
+    {
+        Forward,Back,Right,Left
+        
+    }
+
     public static class Util
     {
         public static bool IsLoging = true;
@@ -25,6 +31,8 @@ namespace MHamidi
         static Util()
         {
         }
+        
+        
 
         public static class NullabelCaster
         {
@@ -65,6 +73,8 @@ namespace MHamidi
                 return new JArray();
             }
 
+           
+
             public static int CastInt(JToken? data)
             {
                 return (int?)data ?? 0;
@@ -90,7 +100,39 @@ namespace MHamidi
         {
             return Path.Combine(Application.persistentDataPath, SaveFile);
         }
+        public static Direction ObjectForwardToWorld(Vector3 forward)
+        {
+            var forwardValue=Vector3.Dot(Vector3.forward, forward);
+            var RightValue = Vector3.Dot(Vector3.forward, forward);
+            if (forwardValue !=0)
+            {
 
+                if (forwardValue==1)
+                {
+                    return Direction.Forward;
+                }
+                else
+                {
+                    return Direction.Back;
+                }
+
+            }
+            else if (RightValue !=0)
+            {
+                if (RightValue==1)
+                {
+                    return Direction.Right;
+                }
+                else
+                {
+                    return Direction.Left;
+                }
+
+            }
+
+            return Direction.Forward;
+
+        }
         public static void ShowMessag(string message, TextColor color = TextColor.White)
         {
 #if UNITY_EDITOR

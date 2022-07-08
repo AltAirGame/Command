@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace MHamidi
 {
@@ -10,27 +11,37 @@ namespace MHamidi
             set { }
         }
 
+        public TurnLeftCommand(GameObject subjectOfCommands)
+        {
+            this.SubjectOfCommands = subjectOfCommands;
+        }
+        
+        public GameObject SubjectOfCommands { get; set; }
+
+        public bool Done { get; set; }
+
         public bool executeWasSuccessful { get; set; }
 
-        public void Execute(GameObject subject)
+        public IEnumerator Execute(GameObject subject)
         {
             TurnLeft(subject);
+            yield return null;
         }
 
-        public void Undo(GameObject subject)
+        public IEnumerator Undo(GameObject subject)
         {
             TurnRight(subject);
+            yield return null;
         }
 
      
         private void TurnRight(GameObject subject)
         {
-          subject.transform.Rotate(Vector3.up,90);
-            
+            subject.transform.Rotate(new Vector3(0f,90f,0f));
         }
 
         private void TurnLeft(GameObject subject)
-        {  subject.transform.Rotate(Vector3.up,-90);
+        {  subject.transform.Rotate(new Vector3(0f,-90f,0f));
         }
     }
 }

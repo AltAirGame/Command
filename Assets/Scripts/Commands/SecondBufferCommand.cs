@@ -1,21 +1,34 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace MHamidi
 {
     public class SecondBufferCommand : ICommand
     {
        
-        public string name { get; set; }
-        public bool executeWasSuccessful { get; set; }
+        public string name {   get { return this.GetType().Name.ToLower(); }
+            set { }}
 
-        public void Execute(GameObject subject)
+        public SecondBufferCommand(GameObject subjectOfCommands)
         {
-            throw new System.NotImplementedException();
+            this.SubjectOfCommands = subjectOfCommands;
         }
 
-        public void Undo(GameObject subject)
+        public GameObject SubjectOfCommands { get; set; }
+
+        public bool Done { get; set; }
+        public bool executeWasSuccessful { get; set; }
+
+        public IEnumerator Execute(GameObject subject)
         {
             throw new System.NotImplementedException();
+            yield return null;
+        }
+
+        public IEnumerator Undo(GameObject subject)
+        {
+            throw new System.NotImplementedException();
+            yield return null;
         }
 
         public void Execute()

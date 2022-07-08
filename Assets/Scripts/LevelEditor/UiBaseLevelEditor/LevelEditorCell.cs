@@ -1,92 +1,155 @@
-
 using System;
 using DG.Tweening;
 using MHamidi;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Serialization;
+using UnityEngine.UIElements;
+using Image = UnityEngine.UI.Image;
 
 namespace MHamidi
 {
-    
-
-public enum CellType
-{   Empty,
-    Flat,
-    FlatLight,
-    OneStepHeight,
-    OneStepLight,
-    TwoStepHeight,
-    TwoStepLight
-}
-public class LevelEditorCell : MonoBehaviour,ICellEditor
-{
-    
-    
-    [SerializeField]private Image Background;
-    [SerializeField] private Image StartIcon;
-    [SerializeField]Sprite[] icons;
-    public void Interact()
-    {
-       ChangeValue();
+    public enum CellType
+    {   NoneInteractable,
+        Interactable
+     
     }
 
-    public void InteractionTwo()
+    public class LevelEditorCell : MonoBehaviour, ICellEditor
     {
-        SetAsStart();
-    }
+        [SerializeField] private Image backGround;
+        [SerializeField] private TextMeshProUGUI heightText;
+        [SerializeField] private Image startIcon;
+        [SerializeField] private ChangeColor lamp;
 
-    private void Start()
-    {
-        UpdateView();
-    }
 
-    public CellType type { get; set; }
-    public bool IsStart { get; set; }
-    public int cellType { get; set; } //Can Be Used In Replace of An Enmum 
+        public CellType type { get; set; }
+        public bool IsStart { get; set; }
 
-    public void SetValue(CellType type)
-    {
-        this.type = type;
-        UpdateView();
-    }
 
-    public void SetValue(int type)
-    {
-        cellType = type;
-        UpdateView();
-    }
+        public int CellLevelHeight { get; set; }
 
-    public void SetAsStart()
-    {
-        IsStart = !IsStart;
-        var startIconDisplay = IsStart ?true : false;
-        StartIcon.gameObject.SetActive(startIconDisplay);
 
-    }
-
-    public void ChangeValue()
-    {
-        cellType += 1;
-        
-        if (cellType>=7)
+        public void Interact()
         {
-            cellType = 0;
+            //I Removed some Code Here
         }
-        UpdateView();
-    }
-    private void UpdateView()
-    {
-        if (icons==null)
+
+        public void InteractionTwo()
         {
-          
-            Util.ShowMessag($"the Icon Array is Empty or Null");
-            return;
+            SetAsStart();
         }
-        Background.sprite = icons[cellType];
-        transform.DOScale(.5f*Vector3.one,.2f).OnComplete(() =>
+
+        public void InteractionThree()
         {
-            transform.localScale=Vector3.one;
-        });
+            //I Removed some Code Here
+        }
+
+
+        private void Start()
+        {
+            CellLevelHeight = 0;
+            type = CellType.NoneInteractable;
+            UpdateView();
+        }
+
+        public void SetValue(CellType type)
+        {
+            this.type = type;
+            UpdateView();
+        }
+
+        public void SetValue(int height, CellType isInteractable)
+        {
+            CellLevelHeight = height;
+            type = isInteractable;
+            UpdateView();
+        }
+
+        public void SetAsStart()
+        {
+            IsStart = !IsStart;
+            var startIconDisplay = IsStart ? true : false;
+            startIcon.gameObject.SetActive(startIconDisplay);
+        }
+
+        public void ChangeLight()
+        {
+            switch (type)
+            {
+                case CellType.NoneInteractable:
+                    type = CellType.Interactable;
+                    break;
+                case CellType.Interactable:
+                    type = CellType.NoneInteractable;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public void IncreasHeight()
+        {
+            CellLevelHeight += 1;
+            UpdateView();
+        }
+
+        public void DecreasHeight()
+        {
+            if (CellLevelHeight <= 0)
+            {
+                CellLevelHeight = 0;
+                UpdateView();
+                return;
+            }
+
+            CellLevelHeight -= 1;
+            UpdateView();
+        }
+
+        private void UpdateView()
+        {
+            if (lamp == null)
+            {
+                Util.ShowMessag($"the Icon Array is Empty or Null");
+                return;
+            }
+
+            backGround.color = HeightToColor();
+            heightText.text = CellLevelHeight.ToString();
+            if (CellLevelHeight > 10)
+            {
+                heightText.color = Color.white;
+            }
+            else
+            {
+                heightText.color = Color.black;
+            }
+
+            transform.DOScale(.5f * Vector3.one, .2f).OnComplete(() =>
+            {
+                transform.localScale = Vector3.one;
+            });
+            switch (type)
+            {
+                case CellType.Interactable:
+                    lamp.TurnOn();
+                    break;
+                case CellType.NoneInteractable:
+                    lamp.TurnOff();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private Color HeightToColor()
+        {
+            var color = Color.white;
+
+            color = new Color((float)1 - (CellLevelHeight * color.r / 10), 1 - (CellLevelHeight * color.g /10),
+                1 - (CellLevelHeight * color.b / 10), 1);
+            return color;
+        }
     }
-}
 }

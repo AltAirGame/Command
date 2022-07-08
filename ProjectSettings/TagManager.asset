@@ -4,13 +4,21 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Cell
   - EditorCell
   - Modal
   - Cell2
   - Cell3
   - GameButton
   - Buffer
+  - Undefined
+  - Cell1
+  - Cell4
+  - Cell5
+  - Cell6
+  - Cell7
+  - Cell8
+  - Cell9
+  - Cell10
   layers:
   - Default
   - TransparentFX

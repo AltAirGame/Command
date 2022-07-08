@@ -18,13 +18,13 @@ public class LevelEditorGrid : MonoBehaviour
     [SerializeField] private TMP_Dropdown _dropdown;
     [SerializeField] private int width = 3;
     [SerializeField] private int height = 3;
-
+    [SerializeField] private float margin=5;
     [SerializeField] private Level currrentLevel;
     [SerializeField] private List<int> commands = new List<int>();
 
     public DataManger dataManger;
     public ICellEditor[,] Grid;
-    public int[,] grid;
+    public CellLayout[,] grid;
     public Vector2Int StartPos=Vector2Int.zero;
     [SerializeField] private RectTransform parrent;
 
@@ -38,10 +38,10 @@ public class LevelEditorGrid : MonoBehaviour
 
     private void CreatGrid()
     {
-        grid = new int[width, height];
+        grid = new CellLayout[width, height];
         Grid = new ICellEditor[width, height];
         var parentSize = new Vector2(parrent.rect.width, parrent.rect.height);
-        var cellSizeX = parentSize.x / (float)width;
+        var cellSizeX = parentSize.x / (float)width ;
         var cellSizeY = parentSize.y / (float)height;
 
         var hafCellX = (float)cellSizeX / 2f;
@@ -55,7 +55,7 @@ public class LevelEditorGrid : MonoBehaviour
                 newCell.SetActive(true);
                 newCell.transform.SetParent(transform, false);
                 RectTransform rectTransform = newCell.GetComponent<RectTransform>();
-                rectTransform.sizeDelta = new Vector2(cellSizeX, cellSizeY);
+                rectTransform.sizeDelta = new Vector2(cellSizeX-margin/2, cellSizeY-margin/2);
                 rectTransform.anchoredPosition = new Vector2((i * cellSizeX) + hafCellX, (j * cellSizeY) + hafCellY);
                 Grid[i, j] = newCell.GetComponent<ICellEditor>();
             }
@@ -106,13 +106,13 @@ public class LevelEditorGrid : MonoBehaviour
         PopulateDropDown();
     }
 
-    private void UpdateGrid(int[,] grid)
+    private void UpdateGrid(CellLayout[,] grid)
     {
         for (int i = 0; i < width; i++)
         {
             for (int j = 0; j < height; j++)
             {
-                grid[j, i] = Grid[j, i].cellType;
+                grid[i, j] = new CellLayout(Grid[i,j].CellLevelHeight,Grid[i,j].type);
                 if (Grid[i,j].IsStart)
                 {
                     StartPos = new Vector2Int(i, j);
@@ -127,7 +127,7 @@ public class LevelEditorGrid : MonoBehaviour
         {
             for (int j = 0; j < height; j++)
             {
-                Grid[i, j].SetValue(currrentLevel.LevelLayout[i,j]);
+                Grid[i, j].SetValue(currrentLevel.LevelLayout[i,j].cellHeight,currrentLevel.LevelLayout[i,j].Type);
                 if (currrentLevel.startX==i&&currrentLevel.startY==j)
                 {
                     Grid[i,j].SetAsStart();

@@ -4,5 +4,6 @@
     {
         void Interact();
         void InteractionTwo();
+        void InteractionThree();
     }
 }
