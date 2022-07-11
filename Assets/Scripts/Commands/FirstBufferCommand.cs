@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using Utils.Singlton;
 
 namespace MHamidi
 {
@@ -21,7 +22,12 @@ namespace MHamidi
         public IEnumerator Execute(GameObject subject)
         {
             var buffer=CommandManger.current.P1Command;
-            yield return null;
+            foreach (var item in buffer)
+            {
+                yield return Dipendency.Instance.StartCoroutine(item.Execute(subject));
+                yield return Util.GetWaitForSeconds(.2f);
+            }
+            
         }
 
         public IEnumerator Undo(GameObject subject)
