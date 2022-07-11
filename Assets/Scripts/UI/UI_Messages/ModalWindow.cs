@@ -34,7 +34,7 @@ namespace MHamidi.UI.UI_Messages
             var targetPos = new Vector3(.5f * Screen.width, .5f * Screen.height, 0);
             Subject.transform.position = startPos;
            
-            Subject.transform.DOMove(targetPos, .5f).SetEase(Ease.InOutQuad).OnComplete(() =>
+            Subject.transform.DOMove(targetPos, 1.2f).SetEase(Ease.InOutQuad).OnComplete(() =>
             {
                 
                 OnShow?.Invoke();

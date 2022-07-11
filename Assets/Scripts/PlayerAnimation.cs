@@ -14,16 +14,7 @@ public class PlayerAnimation : MonoBehaviour, IPlayerAnimation
 {
     public void Walk()
     {
-        transform.DORotate(new Vector3(0, 0, 10f), .2f).OnComplete(() =>
-        {
-            {
-                transform.DORotate(new Vector3(0, 0, -10f), .2f).OnComplete(() =>
-                {
-                    transform.DORotate(new Vector3(0, 0, 0), .2f);
-                });
-
-            }
-        });
+       
     }
 
     public void Jump()

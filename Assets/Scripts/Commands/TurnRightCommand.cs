@@ -15,9 +15,9 @@ namespace MHamidi
 
         public GameObject SubjectOfCommands { get; set; }
 
-        public TurnRightCommand(GameObject subjectOfCommands)
+        public TurnRightCommand()
         {
-            this.SubjectOfCommands = subjectOfCommands;
+           
         }
 
         public bool Done { get; set; }

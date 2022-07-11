@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2413663935742081792}
   - component: {fileID: 8500018886577879478}
+  - component: {fileID: -7114311639758936890}
   m_Layer: 0
   m_Name: Cell
   m_TagString: Cell1
@@ -48,6 +49,18 @@ MonoBehaviour:
   type: 0
   InteractableOff: {fileID: 8723883163065990569}
   InteractableOn: {fileID: 3530862032406636245}
+--- !u!114 &-7114311639758936890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2413663935742082047}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e087298b17e947d5b8d4ddb18d51808f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3530862032406636245
 GameObject:
   m_ObjectHideFlags: 0

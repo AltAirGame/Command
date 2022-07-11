@@ -27,6 +27,9 @@ public class PlayeController
 
 public class LevelManger3D : MonoBehaviour, ILevelManger
 {
+
+    public static event Action CurrentLevelEnded;
+    
     public Ease ease;
     public Level currentLevel { get; set; }
 
@@ -147,12 +150,14 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
         }
 
         Util.ShowMessag($" Game Is Ended", TextColor.Green);
+        CurrentLevelEnded?.Invoke();
         return true;
     }
 
     public void UpdateCellInteraction()
     {
         gameCells[(int)Player.transform.position.x, (int)Player.transform.position.z].Interact();
+        CheckIfGameEnded();
     }
 
 

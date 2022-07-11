@@ -5,6 +5,7 @@ using MHamidi;
 using UnityEngine;
 using System;
 using Utils.Singlton;
+using Object = System.Object;
 
 public class CommandManger : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class CommandManger : MonoBehaviour
     public static event Action ChangePlayButtonInteractivityStatus;
     public static event Action ResetPlayerPosition;
     public static event Action<int,ICommand> AddToBuffer;
-    public static event Action<int,int> RemoveAtIdnexofBuffer;
+    public static event Action<int,int> RemoveAtIndexofBuffer;
 
 
     private int curentBufferIndex=0;
@@ -26,6 +27,8 @@ public class CommandManger : MonoBehaviour
     public List<ICommand> MainCommand=new List<ICommand>();
     public List<ICommand> P1Command=new List<ICommand>();
     public List<ICommand> p2Command =new List<ICommand>();
+    public Stack<ICommand> RewindStack=new Stack<ICommand>();
+
     public List<ICommand> RunTimeCommands = new List<ICommand>(); 
     public Dictionary<int, ICommand> commandLookUpTable=new Dictionary<int, ICommand>();
     
@@ -36,6 +39,10 @@ public class CommandManger : MonoBehaviour
     {
         current = this;
         ConfigureLookups();
+
+        var commandA = new MoveCommand();
+        var commandB = new MoveCommand();
+   
     }
 
     public void SetSubjectOfCommand(GameObject subjectRefrence)
@@ -58,13 +65,13 @@ public class CommandManger : MonoBehaviour
     public void ConfigureLookups()
     {
         
-        commandLookUpTable.Add(0,new MoveCommand(subjectOFCommand));
-        commandLookUpTable.Add(1,new JumpCommand(subjectOFCommand));
-        commandLookUpTable.Add(2,new TurnRightCommand(subjectOFCommand));
-        commandLookUpTable.Add(3,new TurnLeftCommand(subjectOFCommand));
-        commandLookUpTable.Add(4,new InteractCommand(subjectOFCommand));
-        commandLookUpTable.Add(5,new FirstBufferCommand(subjectOFCommand));
-        commandLookUpTable.Add(6,new SecondBufferCommand(subjectOFCommand));
+        commandLookUpTable.Add(0,new MoveCommand());
+        commandLookUpTable.Add(1,new JumpCommand());
+        commandLookUpTable.Add(2,new TurnRightCommand());
+        commandLookUpTable.Add(3,new TurnLeftCommand());
+        commandLookUpTable.Add(4,new InteractCommand());
+        commandLookUpTable.Add(5,new FirstBufferCommand());
+        commandLookUpTable.Add(6,new SecondBufferCommand());
         
         
     }
@@ -80,28 +87,15 @@ public class CommandManger : MonoBehaviour
 
     private IEnumerator PlayWithDelay()
     {
-        //We Creat the RunTime Command
-        CreatRunTimeCommand();
-     
+        Util.ShowMessag($" the Current MainCommand has {MainCommand.Count} item in it");
         foreach (var item in MainCommand)
         {
             yield return StartCoroutine(item.Execute(subjectOFCommand));
+            RewindStack.Push(item);
             
         }
         ChangePlayButtonInteractivityStatus?.Invoke(); 
     }
-
-    private void CreatRunTimeCommand()
-    {
-        foreach (var item in MainCommand)
-        {
-            
-          
-            
-            
-        }
-    }
-
     public void Rewind()
     {
         ChangePlayButtonInteractivityStatus?.Invoke();
@@ -112,11 +106,14 @@ public class CommandManger : MonoBehaviour
 
     private IEnumerator RewindWithDelay()
     {
-        
-        foreach (var item in Enumerable.Reverse(MainCommand))
+        Util.ShowMessag($" [CommaandManger] Command Count is  {RewindStack.Count}");
+        while (RewindStack.Count>0)
         {
-            item.Undo(subjectOFCommand);
-            yield return new WaitForSeconds(.4f);
+            var Command=RewindStack.Pop();
+            Util.ShowMessag($"{Command.GetHashCode()}",TextColor.Red);
+            Util.ShowMessag($" [CommaandManger] Command Execution was {Command.executeWasSuccessful}");
+            yield return StartCoroutine(Command.Undo(subjectOFCommand));
+           
         }
         ChangePlayButtonInteractivityStatus?.Invoke(); 
        
@@ -164,19 +161,19 @@ public class CommandManger : MonoBehaviour
         if (bufferIndex==0)
         {
             MainCommand.RemoveAt(index);
-            RemoveAtIdnexofBuffer?.Invoke(curentBufferIndex,index); 
+            RemoveAtIndexofBuffer?.Invoke(curentBufferIndex,index); 
         }
 
         if (bufferIndex==1)
         {
             P1Command.RemoveAt(index);
-            RemoveAtIdnexofBuffer?.Invoke(curentBufferIndex,index); 
+            RemoveAtIndexofBuffer?.Invoke(curentBufferIndex,index); 
         }
 
         if (bufferIndex==2)
         {
             p2Command.RemoveAt(index);
-            RemoveAtIdnexofBuffer?.Invoke(curentBufferIndex,index); 
+            RemoveAtIndexofBuffer?.Invoke(curentBufferIndex,index); 
         }
       
         

@@ -11,9 +11,9 @@ namespace MHamidi
             set { }
         }
 
-        public TurnLeftCommand(GameObject subjectOfCommands)
+        public TurnLeftCommand()
         {
-            this.SubjectOfCommands = subjectOfCommands;
+            
         }
         
         public GameObject SubjectOfCommands { get; set; }

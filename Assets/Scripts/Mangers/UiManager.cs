@@ -41,7 +41,7 @@ public class UiManager : MonoBehaviour
         CommandManger.UpdatePlay += UpdatePlayButton;
         CommandManger.ChangePlayButtonInteractivityStatus += ChangePlayButtonInterActivityStatus;
         CommandManger.AddToBuffer += AddToBufferUi;
-        CommandManger.RemoveAtIdnexofBuffer += RemoveFromBufferUi;
+        CommandManger.RemoveAtIndexofBuffer += RemoveFromBufferUi;
     }
 
    
@@ -77,6 +77,11 @@ public class UiManager : MonoBehaviour
     }
 
     private void ShowModalMessage(ModalWindowData data)
+    {
+        ShowModalData?.Invoke(data);
+    }
+
+    public void ShowMessage(ModalWindowData data)
     {
         ShowModalData?.Invoke(data);
     }
@@ -117,7 +122,7 @@ public class UiManager : MonoBehaviour
         #endregion
     }
     private void ShowBufferUi(int buffer, int p1, int p2)
-    {
+    {   
         var ActiveBuffers = BufferParrent.GetComponentsInChildren<BufferUI>();
         foreach (var item in ActiveBuffers)
         {

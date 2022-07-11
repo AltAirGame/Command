@@ -2,6 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+
+public interface IGameCellAnimation
+{
+    public void Interact();
+}
+
 public enum GameCellType
 {
     Simple,InteractableOff,InteractableOn
@@ -12,18 +19,22 @@ public class GameCell : MonoBehaviour
 
     [SerializeField] private GameObject InteractableOff;
     [SerializeField] private GameObject InteractableOn;
-
+    
     public void Interact()
     {
         switch (type)
         {
             case GameCellType.Simple:
+                GetComponent<IGameCellAnimation>().Interact();
+                return;
                 break;
             case GameCellType.InteractableOff:
+                GetComponent<IGameCellAnimation>().Interact();
                 type = GameCellType.InteractableOn;
                 break;
             case GameCellType.InteractableOn:
                 type = GameCellType.InteractableOff;
+                GetComponent<IGameCellAnimation>().Interact();
                 break;
             default:
                 break;

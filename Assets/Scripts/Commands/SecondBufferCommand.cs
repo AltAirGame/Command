@@ -9,9 +9,9 @@ namespace MHamidi
         public string name {   get { return this.GetType().Name.ToLower(); }
             set { }}
 
-        public SecondBufferCommand(GameObject subjectOfCommands)
+        public SecondBufferCommand()
         {
-            this.SubjectOfCommands = subjectOfCommands;
+           
         }
 
         public GameObject SubjectOfCommands { get; set; }

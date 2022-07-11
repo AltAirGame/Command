@@ -12,9 +12,9 @@ namespace MHamidi
             set { }
         }
 
-        public JumpCommand(GameObject subjectOfCommands)
+        public JumpCommand()
         {
-            this.SubjectOfCommands = subjectOfCommands;
+            
         }
 
         public GameObject SubjectOfCommands { get; set; }

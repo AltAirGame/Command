@@ -55,7 +55,7 @@ public class Level
     public Level(JToken token)
     {
        
-        number = Util.NullabelCaster.CastInt(token["name"]);
+        number = Util.NullabelCaster.CastInt(token["number"]);
         startX = Util.NullabelCaster.CastInt(token["startX"]);
         startY = Util.NullabelCaster.CastInt(token["startY"]);
         maxBufferSize = Util.NullabelCaster.CastInt(token["maxBufferSize"]);

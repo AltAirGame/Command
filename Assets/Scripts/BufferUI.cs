@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Utils.Singlton;
 
 public class BufferUI : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class BufferUI : MonoBehaviour
 
     public void SetSize(int size)
     {
+        Clear();
         int SizeOfBuffer;
         if (size > 4)
         {
@@ -32,6 +34,16 @@ public class BufferUI : MonoBehaviour
         }
         Buffer.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, SizeOfBuffer);
        
+    }
+
+    public void Clear()
+    {
+        foreach (var item in transform.GetComponentsInChildren<GameButton>())
+        {
+            
+            item.gameObject.SetActive(false);
+            item.transform.SetParent(Dipendency.Instance.Pool.transform,false);
+        }
     }
 
     public void SetOnClick(Action onCLick)

@@ -86,9 +86,10 @@ namespace Utils.Singlton
             Instance = this;
         }
 
-        public void RunCorutine(IEnumerator rutin)
+        public IEnumerator RunCorutine(IEnumerator rutin)
         {
-            StartCoroutine(rutin);
+            yield return StartCoroutine(rutin);
+            
         }
     }
 }

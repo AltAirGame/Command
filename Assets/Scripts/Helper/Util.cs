@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -18,62 +19,73 @@ namespace MHamidi
         Yellow,
         Black
     }
+
     public enum Direction
     {
-        Forward,Back,Right,Left
-        
+        Forward,
+        Back,
+        Right,
+        Left
     }
 
     public static class Util
     {
         public static bool IsLoging = true;
         public static event Action<string> Log;
+        public static Dictionary<float, WaitForSeconds> WaitForSecondsMap=new Dictionary<float, WaitForSeconds>();
         static Util()
         {
         }
-        
-        
+
+        public static WaitForSeconds GetWaitForSeconds(float time)
+        {
+            if (WaitForSecondsMap.ContainsKey(time))
+            {
+                return WaitForSecondsMap[time];
+            }
+            else
+            {
+                var wait=new WaitForSeconds(time);
+                WaitForSecondsMap.Add(time,wait);
+                return wait;
+
+            }
+           
+        }
 
         public static class NullabelCaster
         {
-
             public static JArray CastJArray(JToken? data)
             {
-                if ( data is null )
+                if (data is null)
                 {
                     return new JArray();
                 }
                 else
                 {
-                    
-                
-                if (data.HasValues)
-                {
-                    if (data is JArray)
+                    if (data.HasValues)
                     {
-
-                        if (data.AsJEnumerable().Count()==0)
+                        if (data is JArray)
                         {
-
-                            return new JArray();
+                            if (data.AsJEnumerable().Count() == 0)
+                            {
+                                return new JArray();
+                            }
+                            else
+                            {
+                                return (JArray)data;
+                            }
                         }
-                        else
-                        {
-                            return (JArray)data;
-                        }
-                        
                     }
-                }
-                else
-                {
-                    return new JArray();
-                }
+                    else
+                    {
+                        return new JArray();
+                    }
                 }
 
                 return new JArray();
             }
 
-           
 
             public static int CastInt(JToken? data)
             {
@@ -100,14 +112,14 @@ namespace MHamidi
         {
             return Path.Combine(Application.persistentDataPath, SaveFile);
         }
+
         public static Direction ObjectForwardToWorld(Vector3 forward)
         {
-            var forwardValue=Vector3.Dot(Vector3.forward, forward);
+            var forwardValue = Vector3.Dot(Vector3.forward, forward);
             var RightValue = Vector3.Dot(Vector3.forward, forward);
-            if (forwardValue !=0)
+            if (forwardValue != 0)
             {
-
-                if (forwardValue==1)
+                if (forwardValue == 1)
                 {
                     return Direction.Forward;
                 }
@@ -115,11 +127,10 @@ namespace MHamidi
                 {
                     return Direction.Back;
                 }
-
             }
-            else if (RightValue !=0)
+            else if (RightValue != 0)
             {
-                if (RightValue==1)
+                if (RightValue == 1)
                 {
                     return Direction.Right;
                 }
@@ -127,16 +138,15 @@ namespace MHamidi
                 {
                     return Direction.Left;
                 }
-
             }
 
             return Direction.Forward;
-
         }
+
         public static void ShowMessag(string message, TextColor color = TextColor.White)
         {
 #if UNITY_EDITOR
-            
+
 
             if (IsLoging is false)
             {
