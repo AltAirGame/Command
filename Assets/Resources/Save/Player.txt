@@ -1,1 +1,1 @@
-{"characterSkin":0,"currentLanguage":0,"saveName":"save","soundSetting":true,"unlockedLevels":[]}
+{"characterSkin":0,"currentLanguage":0,"saveName":"","soundSetting":false,"unlockedLevels":[]}

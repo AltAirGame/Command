@@ -38,7 +38,7 @@ public class Level
     public int number;
     public int startX=0;
     public int startY=0;
-    public List<int> AvailableCommand = new List<int>();
+    public List<string> AvailableCommand = new List<string>();
     public int maxBufferSize;
     public int maxP1Size;
     public int maxP2Size;
@@ -62,10 +62,10 @@ public class Level
         maxP1Size = Util.NullabelCaster.CastInt(token["maxP1Size"]);
         maxP2Size = Util.NullabelCaster.CastInt(token["maxP2Size"]);
         var availebel = (JArray)token["AvailableCommand"];
-        AvailableCommand = new List<int>();
+        AvailableCommand = new List<string>();
         foreach (var item in availebel)
         {
-            AvailableCommand.Add(Util.NullabelCaster.CastInt(item));
+            AvailableCommand.Add(Util.NullabelCaster.CastString(item));
         }
         var first = (JArray)token["LevelLayout"];
         var second = (JArray)first[0];
@@ -85,7 +85,7 @@ public class Level
 
 
 
-    public Level(int number,List<int> availableCommand,CellLayout[,] levelLayout, int bufferSizeCurrentValue, int p1SizeCurrentValue, int p2SizeCurrentValue,int StartX,int StartY)
+    public Level(int number,List<string> availableCommand,CellLayout[,] levelLayout, int bufferSizeCurrentValue, int p1SizeCurrentValue, int p2SizeCurrentValue,int StartX,int StartY)
     {
         this.number = number;
         startX = StartX;

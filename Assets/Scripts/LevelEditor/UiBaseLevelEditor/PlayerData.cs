@@ -34,12 +34,16 @@ public class PlayerData
         currentLanguage = Util.NullabelCaster.CastInt(jObject["currentLanguage"]);
         saveName = Util.NullabelCaster.CastString(jObject["saveName"]);
         soundSetting = Util.NullabelCaster.CastBool(jObject["soundSetting"]);
-        var unlocked = (JArray)jObject["unlockedLevels"];
+        var unlocked = Util.NullabelCaster.CastJArray(jObject["unloackedLevels"]);
         unlockedLevels = new List<int>();
-        foreach (var item in unlocked )
+        if (unlocked.Count>0)
         {
-            unlockedLevels.Add(Util.NullabelCaster.CastInt(item));
+            foreach (var item in unlocked )
+            {
+                unlockedLevels.Add(Util.NullabelCaster.CastInt(item));
+            }    
         }
+        
 
 
 

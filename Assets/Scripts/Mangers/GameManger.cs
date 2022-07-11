@@ -14,7 +14,7 @@ namespace MHamidi
         //....
 
 
-        public static event Action<List<int>> UpdatePlayerInput;
+        public static event Action<List<string>> UpdatePlayerInput;
         public static event Action<int, int, int> UpdateBufferUi;
 
 
@@ -107,7 +107,7 @@ namespace MHamidi
             UpdateBufferUi?.Invoke(bufferSize, p1Size, p2Size);
         }
 
-        private void UpdatePlayerInputUI(List<int> avilableCommand)
+        private void UpdatePlayerInputUI(List<string> avilableCommand)
         {
             UpdatePlayerInput?.Invoke(avilableCommand);
         }

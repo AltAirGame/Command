@@ -20,13 +20,39 @@ public class LevelEditorGrid : MonoBehaviour
     [SerializeField] private int height = 3;
     [SerializeField] private float margin=5;
     [SerializeField] private Level currrentLevel;
-    [SerializeField] private List<int> commands = new List<int>();
-
+    [SerializeField] private List<string> commands = new List<string>();
+    private Dictionary<int, string> intTostringCommandLookup = new Dictionary<int, string>();
+    private Dictionary<string, int> stringTointCommandLookup = new Dictionary<string,int>();
+    
     public DataManger dataManger;
     public ICellEditor[,] Grid;
     public CellLayout[,] grid;
     public Vector2Int StartPos=Vector2Int.zero;
     [SerializeField] private RectTransform parrent;
+
+    private void Awake()
+    {
+        ConfigureLookUp();
+    }
+
+    private void ConfigureLookUp()
+    { 
+     
+        intTostringCommandLookup.Add(0,"movecommand");
+        stringTointCommandLookup.Add("movecommand",0);
+        intTostringCommandLookup.Add(1,"jumpcommand");
+        stringTointCommandLookup.Add("jumpcommand",1);
+        intTostringCommandLookup.Add(2,"turnrightcommand");
+        stringTointCommandLookup.Add("turnrightcommand",2);
+        intTostringCommandLookup.Add(3,"turnleftcommand");
+        stringTointCommandLookup.Add("turnleftcommand",3);
+        intTostringCommandLookup.Add(4,"interactcommand");
+        stringTointCommandLookup.Add("interactcommand",4);
+        intTostringCommandLookup.Add(5,"firstbuffercommand");
+        stringTointCommandLookup.Add("firstbuffercommand",5);
+        intTostringCommandLookup.Add(6,"secondbuffercommand");
+        stringTointCommandLookup.Add("secondbuffercommand",6);
+    }
 
     private void Start()
     {
@@ -75,13 +101,13 @@ public class LevelEditorGrid : MonoBehaviour
         {
             if (_toggles[i].isOn)
             {
-                commands.Add(i);
+                commands.Add(intTostringCommandLookup[i]);
             }
             else
             {
-                if (commands.Contains(i))
+                if (commands.Contains(intTostringCommandLookup[i]))
                 {
-                    commands.Remove(i);
+                    commands.Remove(intTostringCommandLookup[i]);
                 }
             }
         }
@@ -164,7 +190,7 @@ public class LevelEditorGrid : MonoBehaviour
         TurnOffAllToggles();
         for (int i = 0; i < currentLevel.AvailableCommand.Count; i++)
         {
-            TurnOnTogglesByIndex(currentLevel.AvailableCommand[i]);
+            TurnOnTogglesByIndex(stringTointCommandLookup[currentLevel.AvailableCommand[i]]);
         }
     }
 

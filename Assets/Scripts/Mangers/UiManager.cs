@@ -86,7 +86,7 @@ public class UiManager : MonoBehaviour
         ShowModalData?.Invoke(data);
     }
 
-    private void ShowPlayrInput(List<int> avilableCommand)
+    private void ShowPlayrInput(List<string> avilableCommand)
     {
         ClearAllChildren();
         AddPlayerInput(avilableCommand);
@@ -104,14 +104,14 @@ public class UiManager : MonoBehaviour
                 item.transform.SetParent(Pool.Instance.transform, false);
             }
         }
-        void AddPlayerInput(List<int> avilableCommand)
+        void AddPlayerInput(List<string> avilableCommand)
         {
             foreach (var item in avilableCommand)
             {
                 var buttonObject = Pool.Instance.Get("GameButton");
                 buttonObject.transform.SetParent(playerInputParent, false);
                 buttonObject.SetActive(true);
-                var command = CommandManger.current.commandLookUpTable[item];
+                var command = CommandFactory.GetCommand(item);
                 var button = buttonObject.GetComponent<GameButton>();
                 button.SetListener(() => { CommandManger.current.AddToCurrentBuffer(command); });
                 var icon = Resources.Load<Sprite>(command.name);
