@@ -4,12 +4,12 @@ using Utils.Singlton;
 
 namespace MHamidi
 {
-    public class FirstBufferCommand : ICommand
+    public class P1 : ICommand
     {
         public string name {    get { return this.GetType().Name.ToLower(); }
             set { } }
 
-        public FirstBufferCommand()
+        public P1()
         {
           
         }

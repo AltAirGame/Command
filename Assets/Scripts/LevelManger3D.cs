@@ -16,7 +16,8 @@ public interface ILevelManger
     public int GetFrontOfPlayeHeight();
     public int GetPlayeCurrentHeight();
     public int GetBackofPlayerHeight();
-    void CreatLevel(Level level, Action<GameObject> setSubjectOfCommand);
+    public void CreatLevel(Level level, Action<GameObject> setSubjectOfCommand);
+    public void ResetLevel();
     public bool CheckIfGameEnded();
 }
 
@@ -41,6 +42,7 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
     private GameCell[,] gameCells;
     private List<GameCell> currentLevelInteractable;
     public GameObject Player;
+    public Quaternion PlayeInitalRotaion=new Quaternion(0,0,0,0);
     [SerializeField] private GameObject PlayerPrefab;
     public static ILevelManger Instance;
 
@@ -73,6 +75,17 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
         StartCoroutine(CreatLevelWithDelay(level, () => { Playerreference?.Invoke(Player); }));
     }
 
+    public void ResetLevel()
+    {
+        Player.transform.position = new Vector3(currentLevel.startX,1f+((currentLevel.LevelLayout[currentLevel.startX,currentLevel.startY].cellHeight-1)*.2f),currentLevel.startY);
+        Player.transform.rotation = PlayeInitalRotaion;
+       
+        foreach (var item in currentLevelInteractable)
+        {
+            item.TurnOff();
+        }
+    }
+
     private IEnumerator CreatLevelWithDelay(Level level, Action OnComplet)
     {
         yield return StartCoroutine(ClearLevelWithDelay());
@@ -93,7 +106,7 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
 
                     if (level.startX == i && level.startY == j)
                     {
-                        Player = Instantiate(PlayerPrefab, new Vector3(i, -10, j), Quaternion.identity);
+                        Player = Instantiate(PlayerPrefab, new Vector3(i, -10, j), PlayeInitalRotaion);
                         Player.transform.DOMove(new Vector3(i, 1, j), .8f).SetEase(ease);
                         Cells.Add(Player);
                     }

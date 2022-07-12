@@ -4,7 +4,7 @@ using Utils.Singlton;
 
 namespace MHamidi
 {
-    public class InteractCommand : ICommand
+    public class inter : ICommand
     {
         public string name
         {
@@ -48,7 +48,7 @@ namespace MHamidi
 
         public void Interacting()
         {
-            var playepos = SubjectOfCommands.transform.position;
+          
 
             Dipendency.Instance.LevelManger.UpdateCellInteraction();
         }

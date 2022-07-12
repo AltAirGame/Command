@@ -5,7 +5,7 @@ using UnityEngine;
 namespace MHamidi
 {
     
-    public class TurnRightCommand : ICommand
+    public class Right : ICommand
     {
         public string name
         {
@@ -15,7 +15,7 @@ namespace MHamidi
 
         public GameObject SubjectOfCommands { get; set; }
 
-        public TurnRightCommand()
+        public Right()
         {
            
         }

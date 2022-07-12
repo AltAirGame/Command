@@ -26,7 +26,13 @@ public class CommandManger : MonoBehaviour
     public Stack<ICommand> RewindStack = new Stack<ICommand>();
 
     public List<ICommand> RunTimeCommands = new List<ICommand>();
-    
+
+    public void StopPlay()
+    {
+        Dipendency.Instance.StopAllCoroutines();
+        Dipendency.Instance.LevelManger.ResetLevel();
+        UpdatePlay?.Invoke(() => { Play(); }, "Play");
+    }
 
 
     private void Awake()
@@ -34,8 +40,8 @@ public class CommandManger : MonoBehaviour
         current = this;
         Util.ShowMessag($"Command Factory Initlized");
         CommandFactory.GetCommand($"");
-        var commandA = new MoveCommand();
-        var commandB = new MoveCommand();
+        var commandA = new Move();
+        var commandB = new Move();
     }
 
     public void SetSubjectOfCommand(GameObject subjectRefrence)
@@ -55,12 +61,10 @@ public class CommandManger : MonoBehaviour
     }
 
     //Can Be Loaded From a json File
-  
+
 
     public void Play()
     {
-        ChangePlayButtonInteractivityStatus?.Invoke();
-        UpdatePlay?.Invoke(() => { Rewind(); }, "Rewind");
         StartCoroutine(PlayWithDelay());
     }
 
@@ -72,31 +76,9 @@ public class CommandManger : MonoBehaviour
             yield return StartCoroutine(item.Execute(subjectOFCommand));
             RewindStack.Push(item);
         }
-
-        ChangePlayButtonInteractivityStatus?.Invoke();
     }
 
-    public void Rewind()
-    {
-        ChangePlayButtonInteractivityStatus?.Invoke();
-        UpdatePlay?.Invoke(() => { Play(); }, "Play");
-        StartCoroutine(RewindWithDelay());
-    }
-
-    private IEnumerator RewindWithDelay()
-    {
-        Util.ShowMessag($" [CommaandManger] Command Count is  {RewindStack.Count}");
-        while (RewindStack.Count > 0)
-        {
-            var Command = RewindStack.Pop();
-            Util.ShowMessag($"{Command.GetHashCode()}", TextColor.Red);
-            Util.ShowMessag($" [CommaandManger] Command Execution was {Command.executeWasSuccessful}");
-            yield return StartCoroutine(Command.Undo(subjectOFCommand));
-        }
-
-        ChangePlayButtonInteractivityStatus?.Invoke();
-    }
-
+    //Redo This part 
 
     public void AddToCurrentBuffer(ICommand command)
     {
@@ -126,30 +108,34 @@ public class CommandManger : MonoBehaviour
         }
     }
 
-    public void RemoveFromBuffer(int bufferIndex, int index)
+    public void RemoveFromBuffer(int bufferIndex, ICommand command)
     {
         if (bufferIndex == 0)
         {
-            MainCommand.RemoveAt(index);
-            RemoveAtIndexofBuffer?.Invoke(curentBufferIndex, index);
+            var index=MainCommand.IndexOf(command);
+            RemoveAtIndexofBuffer?.Invoke(bufferIndex, index);
+            MainCommand.Remove(command);
         }
 
         if (bufferIndex == 1)
         {
-            P1Command.RemoveAt(index);
-            RemoveAtIndexofBuffer?.Invoke(curentBufferIndex, index);
+            var index=P1Command.IndexOf(command);
+            RemoveAtIndexofBuffer?.Invoke(bufferIndex, index);
+            P1Command.Remove(command);
         }
 
         if (bufferIndex == 2)
         {
-            p2Command.RemoveAt(index);
-            RemoveAtIndexofBuffer?.Invoke(curentBufferIndex, index);
+            var index=p2Command.IndexOf(command);
+            RemoveAtIndexofBuffer?.Invoke(bufferIndex, index);
+            p2Command.Remove(command);
         }
     }
 
     private void ChangeBuffer(int index)
     {
         curentBufferIndex = index;
+        
     }
 
     public void SetCurrentBuffer(int index)

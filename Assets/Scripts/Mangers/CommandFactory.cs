@@ -43,6 +43,18 @@ public static class CommandFactory
         return null;
     }
 
+    public static List<ICommand> GetAllCommandInFactory()
+    {  InitilizeFctory();
+        List<ICommand> commands=new List<ICommand>();
 
+        foreach (var item in CommandByName)
+        {
+            var tempCommand = Activator.CreateInstance(item.Value) as ICommand;
+            
+            commands.Add(tempCommand);
+        }
+
+        return commands;
+    }
 
 }

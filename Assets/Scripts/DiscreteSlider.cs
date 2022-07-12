@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using MHamidi;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -52,8 +53,10 @@ public class DiscreteSlider : MonoBehaviour
 
     private void UpdateView()
     {
-     
-        fill.fillAmount =CurrentValue * 1.25f*.1f;
+        var fillSize=fill.rectTransform.rect.width;
+        Util.ShowMessag($"FillSize is {fillSize} ",TextColor.Red);
+        var percentage = fillSize / 12;
+        fill.fillAmount =CurrentValue *percentage*.002f;
     }
 
 

@@ -4,12 +4,32 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class ShowNameInText : MonoBehaviour
+public interface ITextRename
 {
-  [SerializeField] private TextMeshProUGUI text;
 
-   private void OnValidate()
+    public TextMeshProUGUI text { get; set; }
+    public void RenameTOText(String name);
+
+}
+
+public class ShowNameInText : MonoBehaviour,ITextRename
+{
+    
+   
+   public TextMeshProUGUI text { get; set; }
+   public void RenameTOText(string name)
    {
-      text.text = gameObject.name;
+       text = GetComponentInChildren<TextMeshProUGUI>();
+       if (text is not null)
+       {
+           var correctedName=name.Replace("command", "");
+           gameObject.name = correctedName;
+           text.text = correctedName;    
+       }
+       else
+       {
+           
+       }
+       
    }
 }

@@ -51,7 +51,7 @@ namespace MHamidi.UI.UI_Messages
             {
                
                 OnHide?.Invoke();
-                Subject.SetActive(false);
+                Subject.transform.parent.gameObject.SetActive(false);
             });
            
             
@@ -106,6 +106,7 @@ namespace MHamidi.UI.UI_Messages
         //Data
         private ModalWindowData data;
         //View 
+        [SerializeField] private GameObject MessageBox;
         [SerializeField]
         private TextMeshProUGUI headerText;
         [SerializeField]
@@ -153,7 +154,7 @@ namespace MHamidi.UI.UI_Messages
                 gameObject.SetActive(true);
                 return;
             }
-            data.UIAnimation.Show(this.gameObject,null);
+            data.UIAnimation.Show(MessageBox,null);
         }
 
         private void Hide()
@@ -163,12 +164,12 @@ namespace MHamidi.UI.UI_Messages
                 gameObject.SetActive(false);
                 return;
             }
-            data.UIAnimation.Hide(this.gameObject,null);
+            data.UIAnimation.Hide(this.MessageBox,null);
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            Hide();
+            //Some Time We Need to Hide the Modal On Click
         }
     }
 }

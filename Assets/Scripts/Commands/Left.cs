@@ -3,42 +3,45 @@ using UnityEngine;
 
 namespace MHamidi
 {
-    public class SecondBufferCommand : ICommand
+    public class Left : ICommand
     {
-       
-        public string name {   get { return this.GetType().Name.ToLower(); }
-            set { }}
-
-        public SecondBufferCommand()
+        public string name
         {
-           
+            get { return this.GetType().Name.ToLower(); }
+            set { }
         }
 
+        public Left()
+        {
+            
+        }
+        
         public GameObject SubjectOfCommands { get; set; }
 
         public bool Done { get; set; }
+
         public bool executeWasSuccessful { get; set; }
 
         public IEnumerator Execute(GameObject subject)
         {
-            throw new System.NotImplementedException();
+            TurnLeft(subject);
             yield return null;
         }
 
         public IEnumerator Undo(GameObject subject)
         {
-            throw new System.NotImplementedException();
+            TurnRight(subject);
             yield return null;
         }
 
-        public void Execute()
+     
+        private void TurnRight(GameObject subject)
         {
-           
+            subject.transform.Rotate(new Vector3(0f,90f,0f));
         }
 
-        public void Undo()
-        {
-            
+        private void TurnLeft(GameObject subject)
+        {  subject.transform.Rotate(new Vector3(0f,-90f,0f));
         }
     }
 }

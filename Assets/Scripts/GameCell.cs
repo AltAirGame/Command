@@ -22,6 +22,7 @@ public class GameCell : MonoBehaviour
     
     public void Interact()
     {
+        
         switch (type)
         {
             case GameCellType.Simple:
@@ -46,6 +47,12 @@ public class GameCell : MonoBehaviour
     {
         type = cellType;
 
+        UpdateView();
+    }
+
+    public void TurnOff()
+    {
+        type = GameCellType.InteractableOff;
         UpdateView();
     }
 
