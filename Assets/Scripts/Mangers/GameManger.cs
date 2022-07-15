@@ -16,7 +16,7 @@ namespace MHamidi
 
         public static event Action<List<string>> UpdatePlayerInput;
         public static event Action<int, int, int> UpdateBufferUi;
-
+        public static event Action<List<Level>> AddLevels; 
 
         private void OnEnable()
         {
@@ -61,6 +61,8 @@ namespace MHamidi
         {
             _levelManger = Dipendency.Instance.LevelManger;
             dataManger = Dipendency.Instance.DataManger;
+            AddLevels?.Invoke(dataManger.gameData.levels);
+
         }
 
 
@@ -78,8 +80,9 @@ namespace MHamidi
             }
         }
 
-        private void StartLevel(Level level)
+        public void StartLevel(Level level)
         {
+            CurrentLevel = level.number;
             if (_levelManger is not null)
             {
                 _levelManger.CreatLevel(level, Dipendency.Instance.ComandManger.SetSubjectOfCommand); //Start A Level 
@@ -99,7 +102,9 @@ namespace MHamidi
                 Util.ShowMessag($" No next level ");
                 return null;
             }
-            return Dipendency.Instance.DataManger.gameData.GetLevel(CurrentLevel + 1);
+
+            CurrentLevel++;
+            return Dipendency.Instance.DataManger.gameData.GetLevel(CurrentLevel);
         }
 
         private void UpdateLevelBufferUi(int bufferSize, int p1Size, int p2Size)

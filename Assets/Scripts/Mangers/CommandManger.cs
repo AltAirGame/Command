@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using MHamidi;
 using UnityEngine;
 using System;
+using System.Linq;
 using Utils.Singlton;
 
 public class CommandManger : MonoBehaviour
@@ -11,7 +12,7 @@ public class CommandManger : MonoBehaviour
     public static event Action ChangePlayButtonInteractivityStatus;
     public static event Action ResetPlayerPosition;
     public static event Action<int, ICommand> AddToBuffer;
-    public static event Action<int, int> RemoveAtIndexofBuffer;
+    public static event Action<int, int,int> RemoveAtIndexofBuffer;
 
 
     private int curentBufferIndex = 0;
@@ -60,7 +61,7 @@ public class CommandManger : MonoBehaviour
         p2Command.Clear();
     }
 
-    //Can Be Loaded From a json File
+
 
 
     public void Play()
@@ -108,28 +109,35 @@ public class CommandManger : MonoBehaviour
         }
     }
 
-    public void RemoveFromBuffer(int bufferIndex, ICommand command)
+    public void RemoveFromBuffer(int bufferIndex, ICommand command,int instanceId)
     {
-        if (bufferIndex == 0)
-        {
-            var index=MainCommand.IndexOf(command);
-            RemoveAtIndexofBuffer?.Invoke(bufferIndex, index);
-            MainCommand.Remove(command);
-        }
-
-        if (bufferIndex == 1)
-        {
-            var index=P1Command.IndexOf(command);
-            RemoveAtIndexofBuffer?.Invoke(bufferIndex, index);
-            P1Command.Remove(command);
-        }
-
-        if (bufferIndex == 2)
-        {
-            var index=p2Command.IndexOf(command);
-            RemoveAtIndexofBuffer?.Invoke(bufferIndex, index);
-            p2Command.Remove(command);
-        }
+         switch (bufferIndex)
+         {
+             case 0:
+             {
+                 var commandTORemove=MainCommand.Where(x => x == command).First();
+                 
+                 
+                 var index=MainCommand.IndexOf(command);
+                 RemoveAtIndexofBuffer?.Invoke(bufferIndex, index,instanceId);
+                 MainCommand.Remove(command);
+                 break;
+             }
+             case 1:
+             {
+                 var index=P1Command.IndexOf(command);
+                 RemoveAtIndexofBuffer?.Invoke(bufferIndex, index,instanceId);
+                 P1Command.Remove(command);
+                 break;
+             }
+             case 2:
+             {
+                 var index=p2Command.IndexOf(command);
+                 RemoveAtIndexofBuffer?.Invoke(bufferIndex, index,instanceId);
+                 p2Command.Remove(command);
+                 break;
+             }
+         }
     }
 
     private void ChangeBuffer(int index)

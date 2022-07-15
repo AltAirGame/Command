@@ -78,8 +78,8 @@ namespace MHamidi
 
         private int GetForwardJump()
         {
-            var jumpHeight = Dipendency.Instance.LevelManger.GetFrontOfPlayeHeight() -
-                             Dipendency.Instance.LevelManger.GetPlayeCurrentHeight();
+            var jumpHeight = Dipendency.Instance.LevelManger.GetFrontOfPlayerHeight() -
+                             Dipendency.Instance.LevelManger.GetPlayerCurrentHeight();
             return jumpHeight;
         }
 

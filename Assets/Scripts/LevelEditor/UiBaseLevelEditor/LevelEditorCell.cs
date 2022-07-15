@@ -73,6 +73,14 @@ namespace MHamidi
             startIcon.gameObject.SetActive(startIconDisplay);
         }
 
+        public void Clear()
+        {
+            type = CellType.NoneInteractable;
+            IsStart = false;
+            CellLevelHeight = 0;
+            UpdateView();
+        }
+
         public void ChangeLight()
         {
             switch (type)
@@ -114,7 +122,8 @@ namespace MHamidi
                 Util.ShowMessag($"the Icon Array is Empty or Null");
                 return;
             }
-
+            var startIconDisplay = IsStart ? true : false;
+            startIcon.gameObject.SetActive(startIconDisplay);
             backGround.color = HeightToColor();
             heightText.text = CellLevelHeight.ToString();
             if (CellLevelHeight > 10)

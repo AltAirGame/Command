@@ -8,7 +8,9 @@ using MHamidi.Helper;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
+using Utils.Singlton;
 
 public class LevelEditorGrid : MonoBehaviour
 {
@@ -20,7 +22,8 @@ public class LevelEditorGrid : MonoBehaviour
     [SerializeField] private DiscreteSlider BufferSize;
     [SerializeField] private DiscreteSlider P1Size;
     [SerializeField] private DiscreteSlider P2Size;
-    [SerializeField] private TMP_Dropdown _dropdown;
+    [SerializeField] private TMP_Dropdown _levelNameDropDown;
+    [SerializeField] private TMP_Dropdown _playerDirectionDropdown;
     [SerializeField] private int width = 3;
     [SerializeField] private int height = 3;
     [SerializeField] private float margin=5;
@@ -28,7 +31,7 @@ public class LevelEditorGrid : MonoBehaviour
     [SerializeField] private List<string> commands = new List<string>();
    
         
-    public DataManger dataManger;
+    
     public ICellEditor[,] Grid;
     public CellLayout[,] grid;
     public Vector2Int StartPos=Vector2Int.zero;
@@ -60,12 +63,16 @@ public class LevelEditorGrid : MonoBehaviour
 
     private void Start()
     {
-        dataManger ??= DataManger.Instance;
+       
 
-        PopulateDropDown();
+        PopulateLevelNameDropDown();
+        PopulatePlayerDirectionDropDOwn();
         CreatGrid();
+        
     }
 
+    
+    //Creat Grid___________________________________________
     private void CreatGrid()
     {
         grid = new CellLayout[width, height];
@@ -92,6 +99,9 @@ public class LevelEditorGrid : MonoBehaviour
         }
     }
 
+
+    #region Collect Data
+
     private void HandleTogglesData()
     {
         commands.Clear();
@@ -117,25 +127,44 @@ public class LevelEditorGrid : MonoBehaviour
         }
     }
 
+    #endregion
+   
+
 
     public void SaveLevel()
     {
         HandleTogglesData();
+        ClearlevelLayOutGrid();
         UpdateGrid(grid);
         
-        Util.ShowMessag($"We Are Updaing Level Number ({_dropdown.value})");
-        dataManger.AddTOLevels(new Level(_dropdown.value, commands, grid, BufferSize.CurrentValue, P1Size.CurrentValue,
+        Util.ShowMessag($"We Are Updaing Level Number ({_levelNameDropDown.value})");
+        Dipendency.Instance.DataManger.AddTOLevels(new Level(currrentLevel.number,commands,(PlayerDirection)_playerDirectionDropdown.value, grid, BufferSize.CurrentValue, P1Size.CurrentValue,
             P2Size.CurrentValue,StartPos.x,StartPos.y));
-        PopulateDropDown();
+        
     }
 
     public void SaveNewLevel()
     {
         HandleTogglesData();
+        ClearlevelLayOutGrid();
         UpdateGrid(grid);
-        dataManger.AddTOLevels(new Level(_dropdown.options.Count, commands, grid, BufferSize.CurrentValue,
+        var levelNumber = Dipendency.Instance.DataManger.gameData.levels.Count > 0
+            ? Dipendency.Instance.DataManger.gameData.levels.Count + 1
+            : 0;
+        Dipendency.Instance.DataManger.AddTOLevels(new Level(levelNumber, commands,(PlayerDirection)_playerDirectionDropdown.value, grid, BufferSize.CurrentValue,
             P1Size.CurrentValue, P2Size.CurrentValue,StartPos.x,StartPos.y));
-        PopulateDropDown();
+        PopulateLevelNameDropDown();
+    }
+
+    private void ClearlevelLayOutGrid()
+    {
+        for (int i = 0; i <8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                grid[i, j] = null;
+            }
+        }
     }
 
     private void UpdateGrid(CellLayout[,] grid)
@@ -161,6 +190,7 @@ public class LevelEditorGrid : MonoBehaviour
             for (int j = 0; j < height; j++)
             {
                 Grid[i, j].SetValue(currrentLevel.LevelLayout[i,j].cellHeight,currrentLevel.LevelLayout[i,j].Type);
+
                 if (currrentLevel.startX==i&&currrentLevel.startY==j)
                 {
                     Grid[i,j].SetAsStart();
@@ -174,8 +204,8 @@ public class LevelEditorGrid : MonoBehaviour
     public void LoadLevel()
     {
         
-        currrentLevel = dataManger.gameData.GetLevel(_dropdown.value);
-        Util.ShowMessag($"We Are Loading Level Number ({_dropdown.value})");
+        currrentLevel = Dipendency.Instance.DataManger.gameData.GetLevel(_levelNameDropDown.value);
+        Util.ShowMessag($"We Are Loading Level Number ({_levelNameDropDown.value})");
         UpdateUi(currrentLevel);
         StartCoroutine(UpdateBoard());
     }
@@ -187,8 +217,8 @@ public class LevelEditorGrid : MonoBehaviour
         {
             for (int j = 0; j < height; j++)
             {
-                Grid[i, j].SetValue(0,CellType.NoneInteractable);
-                Grid[i, j].IsStart = false;
+                Grid[i, j].Clear();
+            
                 yield return new WaitForSeconds(.05f);
             }
         }
@@ -197,6 +227,12 @@ public class LevelEditorGrid : MonoBehaviour
     {
         UpdateToggles(level);
         UpdateBuffers(level);
+        UpdateDirectionDropDown(level.direction);
+    }
+
+    private void UpdateDirectionDropDown(PlayerDirection levelDirection)
+    {
+        _playerDirectionDropdown.value = (int)levelDirection;
     }
 
     private void UpdateBuffers(Level currentLevel)
@@ -228,16 +264,27 @@ public class LevelEditorGrid : MonoBehaviour
         }
     }
 
-    private void PopulateDropDown()
+    private void PopulatePlayerDirectionDropDOwn()
+    {
+
+        var names = Enum.GetNames(typeof(PlayerDirection)).ToList();
+        _playerDirectionDropdown.ClearOptions();
+        _playerDirectionDropdown.AddOptions(names);
+        
+        
+    }
+
+    private void PopulateLevelNameDropDown()
     {
         List<string> options = new List<string>();
 
-        foreach (var level in dataManger.gameData.levels)
+        foreach (var level in Dipendency.Instance.DataManger.gameData.levels)
         {
             options.Add(level.number.ToString());
         }
 
-        _dropdown.ClearOptions();
-        _dropdown.AddOptions(options);
+        _levelNameDropDown.ClearOptions();
+        _levelNameDropDown.AddOptions(options);
+        _levelNameDropDown.value = _levelNameDropDown.options.Count - 1;
     }
 }

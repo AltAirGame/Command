@@ -50,7 +50,7 @@ namespace MHamidi
         {
           
 
-            Dipendency.Instance.LevelManger.UpdateCellInteraction();
+            Dipendency.Instance.LevelManger.Intereact();
         }
     }
 }

@@ -88,8 +88,8 @@ namespace MHamidi
 
         private bool IsForawardJumpable()
         {
-            if (Mathf.Abs(Dipendency.Instance.LevelManger.GetFrontOfPlayeHeight() -
-                          Dipendency.Instance.LevelManger.GetPlayeCurrentHeight()) > 0)
+            if (Mathf.Abs(Dipendency.Instance.LevelManger.GetFrontOfPlayerHeight() -
+                          Dipendency.Instance.LevelManger.GetPlayerCurrentHeight()) > 0)
             {
                 return true;
             }
@@ -101,9 +101,7 @@ namespace MHamidi
 
         public bool IsForwardOutOfBound()
         {
-            Util.ShowMessag(
-                $" The PlayerPosition is {SubjectOfCommands.transform.position} and the PlayeForward is {SubjectOfCommands.transform.forward} and the target is {SubjectOfCommands.transform.position + SubjectOfCommands.transform.forward} ",
-                TextColor.Yellow);
+          
             var forward = SubjectOfCommands.transform.position + SubjectOfCommands.transform.forward;
             if (forward.x > 0 && forward.x <= Dipendency.Instance.LevelManger.currentLevel.height - 1 && forward.z > 0 &&
                 forward.z <= Dipendency.Instance.LevelManger.currentLevel.width - 1)
@@ -116,9 +114,6 @@ namespace MHamidi
 
         public bool IsForwardEmpty()
         {
-            Util.ShowMessag(
-                $" The PlayerPosition is {SubjectOfCommands.transform.position} and the PlayeForward is {SubjectOfCommands.transform.forward} and the target is {SubjectOfCommands.transform.position + SubjectOfCommands.transform.forward} ",
-                TextColor.Green);
             var forward = SubjectOfCommands.transform.position + SubjectOfCommands.transform.forward;
             if (Dipendency.Instance.LevelManger.currentLevel.LevelLayout[(int)forward.x, (int)forward.z].cellHeight > 0)
             {

@@ -54,7 +54,7 @@ public class DiscreteSlider : MonoBehaviour
     private void UpdateView()
     {
         var fillSize=fill.rectTransform.rect.width;
-        Util.ShowMessag($"FillSize is {fillSize} ",TextColor.Red);
+
         var percentage = fillSize / 12;
         fill.fillAmount =CurrentValue *percentage*.002f;
     }

@@ -8,7 +8,7 @@ public class GameButton : MonoBehaviour
 {
   [SerializeField] private Image Icon;
   [SerializeField] private Button Button;
-
+  
   public void SetIcon(Sprite icon)
   {
     this.Icon.sprite = icon;

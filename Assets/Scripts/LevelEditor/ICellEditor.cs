@@ -14,6 +14,7 @@ namespace MHamidi
 
         void SetValue(int height,CellType Interactable);
         void SetAsStart();
+        void Clear();
         void IncreasHeight();
         void DecreasHeight();
 

@@ -10,12 +10,12 @@ using UnityEngine;
 public interface ILevelManger
 {
     public Level currentLevel { get; set; }
-    void UpdateCellInteraction();
+    void Intereact();
     public Vector3Int GetFrontOfPlayerPosition();
-    public Vector3Int GetBackOfPlayerPosition();
-    public int GetFrontOfPlayeHeight();
-    public int GetPlayeCurrentHeight();
-    public int GetBackofPlayerHeight();
+  
+    public int GetFrontOfPlayerHeight();
+    public int GetPlayerCurrentHeight();
+  
     public void CreatLevel(Level level, Action<GameObject> setSubjectOfCommand);
     public void ResetLevel();
     public bool CheckIfGameEnded();
@@ -38,6 +38,7 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
     public static event Action<int> AddBufferSize;
     public static event Action<int> AddP1Size;
     public static event Action<int> AddP2Size;
+    [SerializeField] private bool DebugingIsOn=false;
     private List<GameObject> Cells;
     private GameCell[,] gameCells;
     private List<GameCell> currentLevelInteractable;
@@ -59,6 +60,11 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
 
     private void OnDisable()
     {
+    }
+
+    public int GetBackOfPlayerHeight()
+    {
+        throw new NotImplementedException();
     }
 
     public void CreatLevel(Level level, Action<GameObject> Playerreference)
@@ -101,7 +107,7 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
                     var cellType = level.LevelLayout[i, j].Type == CellType.Interactable
                         ? GameCellType.InteractableOff
                         : GameCellType.Simple;
-                    SetupCell(cell, i, j, cellType);
+                    SetupCell(cell, i, j,level.LevelLayout[i, j].cellHeight, cellType);
 
 
                     if (level.startX == i && level.startY == j)
@@ -137,11 +143,12 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
         Cells.Clear();
     }
 
-    private void SetupCell(GameObject cell, int i, int j, GameCellType cellType)
+    private void SetupCell(GameObject cell, int i, int j,int height, GameCellType cellType)
     {
         Cells.Add(cell);
         gameCells[i, j] = cell.GetComponent<GameCell>();
         gameCells[i, j].Setup(cellType);
+        gameCells[i,j].SetupDebugerPart(new Vector2Int(i,j),height,DebugingIsOn);
         if (cellType is GameCellType.InteractableOff)
         {
             currentLevelInteractable.Add(gameCells[i, j]);
@@ -167,38 +174,52 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
         return true;
     }
 
-    public void UpdateCellInteraction()
+    public void Intereact()
     {
         gameCells[(int)Player.transform.position.x, (int)Player.transform.position.z].Interact();
         CheckIfGameEnded();
     }
-
+    
 
     public Vector3Int GetFrontOfPlayerPosition()
     {
-        return Vector3Int.FloorToInt(Player.transform.position + Player.transform.forward);
+
+        var fp= GetPlayerPosition() + GetLocalForwardOfPlayer();
+        Util.ShowMessag($" Front is {fp}");
+        return fp;
     }
 
-    public Vector3Int GetBackOfPlayerPosition()
+    public Vector3Int GetPlayerPosition()
     {
-        return Vector3Int.FloorToInt(Player.transform.position - Player.transform.forward);
+        return Vector3Int.FloorToInt(Player.transform.position);
     }
 
-    public int GetFrontOfPlayeHeight()
+    public Vector3Int GetLocalForwardOfPlayer()
     {
-        var front = GetFrontOfPlayerPosition();
-        return currentLevel.LevelLayout[front.x, front.z].cellHeight;
+
+        var PlayerRotation = Player.transform.rotation;
+        var Forward = Vector3.forward;
+
+        var forwrd = Quaternion.Euler(PlayerRotation.x,PlayerRotation.y,PlayerRotation.z) * Forward;
+        var fp= Vector3Int.FloorToInt(forwrd);
+       
+        return fp;
     }
 
-    public int GetBackofPlayerHeight()
+    
+    public int GetFrontOfPlayerHeight()
     {
-        var back = GetBackOfPlayerPosition();
-        return currentLevel.LevelLayout[back.x, back.z].cellHeight;
+      
+        var fh=currentLevel.LevelLayout[GetFrontOfPlayerPosition().x, GetFrontOfPlayerPosition().z].cellHeight;
+        return fh;
     }
 
-    public int GetPlayeCurrentHeight()
+  
+
+    public int GetPlayerCurrentHeight()
     {
-        var position = Player.transform.position;
-        return currentLevel.LevelLayout[(int)position.x, (int)position.z].cellHeight;
+        var position = Vector3Int.FloorToInt(Player.transform.position);
+        var ch= currentLevel.LevelLayout[position.x, position.z].cellHeight;
+        return ch;
     }
 }

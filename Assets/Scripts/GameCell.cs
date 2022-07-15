@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 
 public interface IGameCellAnimation
@@ -16,9 +18,13 @@ public enum GameCellType
 public class GameCell : MonoBehaviour
 {
     public GameCellType type;
-
+    
     [SerializeField] private GameObject InteractableOff;
     [SerializeField] private GameObject InteractableOn;
+    [SerializeField] private GameObject border;
+     [SerializeField] private TextMeshProUGUI cordianteText;
+    [SerializeField] private TextMeshProUGUI Height;
+    
     
     public void Interact()
     {
@@ -41,6 +47,23 @@ public class GameCell : MonoBehaviour
                 break;
         }
         UpdateView();
+    }
+    
+    public void SetupDebugerPart(Vector2Int cordinate,int height,bool debuging)
+    {
+        cordianteText.text = $" x:{cordinate.x},y:{cordinate.y}";
+        Height.text = height.ToString();
+        ToggleDebugger(debuging);
+    }
+
+    public void ToggleDebugger(bool debugger)
+    {
+        
+       
+            cordianteText.gameObject.SetActive(debugger);
+            Height.gameObject.SetActive(debugger);
+            border.gameObject.SetActive(debugger);
+       
     }
 
     public void Setup(GameCellType cellType)
