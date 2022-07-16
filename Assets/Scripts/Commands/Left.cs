@@ -24,7 +24,7 @@ namespace MHamidi
         { 
             yield return Util.GetWaitForSeconds(.2f);
             TurnLeft(subject);
-           
+            yield return Util.GetWaitForSeconds(.1f);
         }
 
         public IEnumerator Undo(GameObject subject)

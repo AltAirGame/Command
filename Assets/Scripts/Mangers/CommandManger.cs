@@ -72,11 +72,13 @@ public class CommandManger : MonoBehaviour
     private IEnumerator PlayWithDelay()
     {
         Util.ShowMessag($" the Current MainCommand has {MainCommand.Count} item in it");
-        foreach (var item in MainCommand)
+        for (int i = 0; i < MainCommand.Count; i++)
         {
-            yield return StartCoroutine(item.Execute(subjectOFCommand));
-           
+            
+            yield return StartCoroutine(MainCommand[i].Execute(subjectOFCommand));
+            yield return null;
         }
+       
     }
 
     //Redo This part 

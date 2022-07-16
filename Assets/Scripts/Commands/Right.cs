@@ -27,6 +27,7 @@ namespace MHamidi
         {
             yield return Util.GetWaitForSeconds(.2f);
             TurnRight(subject);
+            yield return Util.GetWaitForSeconds(.1f);
             
         }
 

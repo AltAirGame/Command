@@ -259,7 +259,7 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
             }
           
         }
-       // Player.transform.rotation=Quaternion.LookRotation(new Vector3(playerForward.x,playerForward.y,playerForward.z));
+        Player.transform.rotation=Quaternion.LookRotation(new Vector3(playerForward.x,playerForward.y,playerForward.z));
     }
 
     public Vector3Int GetLocalForwardOfPlayer()

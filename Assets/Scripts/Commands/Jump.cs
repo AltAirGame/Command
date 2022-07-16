@@ -25,7 +25,7 @@ namespace MHamidi
         {
             SubjectOfCommands = subject;
             Util.ShowMessag($" Jump");
-            yield return Dipendency.Instance.StartCoroutine(JumpForward());
+            yield return Dipendency.Instance.StartCoroutine(JumpForward(subject));
             subject.GetComponentInChildren<IPlayerAnimation>().Jump();
             yield return null;
         }
@@ -67,23 +67,28 @@ namespace MHamidi
 
        
 
-        public IEnumerator JumpForward()
+        public IEnumerator JumpForward(GameObject subject)
         {
-            if (IsForwardOutOfBound())
-            {
-                yield return null;
-                yield break;
-            }
 
-            if (IsForwardEmpty())
-            {
-                yield return null;
-                yield break;
-            }
-
-            var jumpHeight = GetForwardJump();
-            yield return Dipendency.Instance.StartCoroutine(JumpForwardAction(jumpHeight));
             yield return null;
+            var available = Dipendency.Instance.LevelManger.IsAvailable(
+                this);
+            if (available)
+            {
+                var levelManger = Dipendency.Instance.LevelManger;
+                var jumpHeight = levelManger.GetFrontOfPlayerHeight() - levelManger.GetFrontOfPlayerHeight();
+                levelManger.playerPos += levelManger.playerForward;
+                yield return Dipendency.Instance.StartCoroutine(JumpForwardAction(jumpHeight));
+                subject.GetComponentInChildren<IPlayerAnimation>().Jump();
+                yield return Util.GetWaitForSeconds(.2f);
+            }
+            else
+            {
+                subject.GetComponentInChildren<IPlayerAnimation>().Jump();
+                yield return Util.GetWaitForSeconds(.2f);
+            }
+
+            
 
         }
 
@@ -108,8 +113,8 @@ namespace MHamidi
             return jumpHeight;
         }
 
- 
-
+    
+        //there is A Bug Here 
         public IEnumerator JumpForwardAction(int target)
         {
             float t = 0;
