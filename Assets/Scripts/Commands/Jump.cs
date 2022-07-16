@@ -19,9 +19,7 @@ namespace MHamidi
 
         public GameObject SubjectOfCommands { get; set; }
 
-        public bool Done { get; set; }
-
-        public bool executeWasSuccessful { get; set; }
+      
 
         public IEnumerator Execute(GameObject subject)
         {
@@ -40,7 +38,34 @@ namespace MHamidi
             yield return null;
         }
 
-      
+        public bool Requirement(int height, int width, Vector3Int playerPosition, Vector3Int playerForward, int playerHeight,
+            int forwardHeight)
+        {
+            //Check Out Of Bound
+            if (playerPosition.x + playerForward.x < 0 && playerPosition.x + playerForward.x >= width)
+            {
+                return false;
+            }
+
+            if (playerPosition.z + playerForward.z < 0 && playerPosition.z + playerForward.z >= width)
+            {
+                return false;
+            }
+
+            if (Mathf.Abs(forwardHeight - playerHeight) ==0 ||Mathf.Abs(forwardHeight - playerHeight) >=2 )
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public void ExecutionInstruction(ILevelManger levelManger)
+        {
+           
+        }
+
+       
 
         public IEnumerator JumpForward()
         {

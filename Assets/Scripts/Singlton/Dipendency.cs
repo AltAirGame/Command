@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Mangers;
 using MHamidi;
 using MHamidi.Helper;
 using UnityEngine;
@@ -59,6 +60,15 @@ namespace Utils.Singlton
             get { return _levelManger; }
         }
 
+        private GameEventHandler _gameEventHandler;
+
+        public GameEventHandler GameEventHandler
+        {
+            get
+            {
+                return _gameEventHandler;
+            }
+        }
         public static Dipendency Instance;
 
         private Camera _camera;
@@ -76,6 +86,7 @@ namespace Utils.Singlton
 
         private void Awake()
         {
+            _gameEventHandler = GetComponent<GameEventHandler>();
             _dataManger = GetComponent<DataManger>();
             _gameManger = GetComponent<GameManger>();
             _commandManger = GetComponent<CommandManger>();

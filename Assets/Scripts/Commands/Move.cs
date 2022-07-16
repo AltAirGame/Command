@@ -22,16 +22,9 @@ namespace MHamidi
 
         public GameObject SubjectOfCommands { get; set; }
 
-        public bool Done { get; set; }
-
-        public bool executeWasSuccessful { get; set; }
-
         public IEnumerator Execute(GameObject subject)
         {
-            executeWasSuccessful = false;
-            SubjectOfCommands = subject;
-
-            yield return Dipendency.Instance.StartCoroutine(MoveForward(subject, executeWasSuccessful));
+            yield return Dipendency.Instance.StartCoroutine(MoveForward(subject));
         }
 
         public IEnumerator Undo(GameObject subject)
@@ -61,45 +54,26 @@ namespace MHamidi
             return true;
         }
 
-        public bool ExecutionInstruction(GameObject subjectOfCommand, Vector3Int playerPosition, Vector3Int playerForward,
-            int playerHeight, int forwardHeight)
-        {
-            return false;
-        }
 
-
-        private IEnumerator MoveForward(GameObject subject, bool moveable)
+        private IEnumerator MoveForward(GameObject subject)
         {
             var available = Dipendency.Instance.LevelManger.IsAvailable(
                 this);
             if (available)
             {
-                Dipendency.Instance.LevelManger.Submit(this);
+                var levelManger = Dipendency.Instance.LevelManger;
+                levelManger.playerPos += levelManger.playerForward;
+                levelManger.UpdatePlayer();
+                subject.GetComponentInChildren<IPlayerAnimation>().Walk();
+                yield return Util.GetWaitForSeconds(.2f);
+            }
+            else
+            {
+                subject.GetComponentInChildren<IPlayerAnimation>().Walk();
+                yield return Util.GetWaitForSeconds(.2f);
             }
 
-            var target = subject.transform.position + subject.transform.forward;
-            subject.GetComponentInChildren<IPlayerAnimation>().Walk();
-                
-            // if (moveable)
-            // {
-            //     subject.transform.DOMove(target, .2f, true).OnComplete(() => { Done = true; });
-            //
-            //     subject.GetComponentInChildren<IPlayerAnimation>().Walk();
-            //
-            //     yield return Util.GetWaitForSeconds(.2f);
-            //     yield break;
-            // }
-            // else
-            // {
-            //     subject.GetComponentInChildren<IPlayerAnimation>().Walk();
-
-            // }
-            yield return Util.GetWaitForSeconds(.1f);
+            
         }
     }
-    
 }
-
-
-
-

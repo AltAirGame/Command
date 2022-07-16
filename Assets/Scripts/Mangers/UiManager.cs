@@ -275,7 +275,7 @@ public class UiManager : MonoBehaviour
                 {
                     Dipendency.Instance.GameManger.StartLevel(item);
                     LevelSelctionMenu
-                        .DOMove(new Vector3(-3 * Screen.width, Screen.height / 2, 0), .5f).OnComplete(
+                        .DOMove(new Vector3(-3 * Screen.width, Screen.height / 2, 0), 1f).OnComplete(
                             () =>
                             {
                                 LevelSelctionMenu.gameObject.SetActive(false);

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using Mangers;
 using MHamidi;
 using MHamidi.Helper;
 using UnityEngine;
@@ -9,7 +10,10 @@ using UnityEngine;
 
 public interface ILevelManger
 {
+    public GameObject Player { get; set; }
     public Level currentLevel { get; set; }
+    public Vector3Int playerPos { get; set; }
+    public Vector3Int playerForward { get; set; }
     void Intereact();
     public Vector3Int GetFrontOfPlayerPosition();
 
@@ -20,12 +24,8 @@ public interface ILevelManger
     public void ResetLevel();
     public bool CheckIfGameEnded();
     bool IsAvailable(ICommand command);
-    void Submit(ICommand command);
-}
 
-
-public class PlayeController
-{
+    public void UpdatePlayer();
 }
 
 public class LevelManger3D : MonoBehaviour, ILevelManger
@@ -34,6 +34,8 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
 
     public Ease ease;
     public Level currentLevel { get; set; }
+    public Vector3Int playerPos { get; set; }
+    public Vector3Int playerForward { get; set; }
 
     public static event Action<List<ICommand>> AddAvilableCommand;
     public static event Action<int> AddBufferSize;
@@ -43,13 +45,13 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
     private List<GameObject> Cells;
     private GameCell[,] gameCells;
     private List<GameCell> currentLevelInteractable;
-    public GameObject Player;
-    [SerializeField] private Vector3Int playerPos;
-    public Vector3Int PlayeForward;
+    public GameObject Player { get; set; }
     [SerializeField] private GameObject PlayerPrefab;
 
     public static ILevelManger Instance;
 
+
+    #region  Unity
     private void Awake()
     {
         Instance = this;
@@ -59,17 +61,20 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
 
     private void OnEnable()
     {
+        GameEventHandler.Rotate += Rotate;
+        GameEventHandler.IsAvailable += IsAvailable;
+       
     }
 
     private void OnDisable()
     {
+        GameEventHandler.Rotate -= Rotate;
+        GameEventHandler.IsAvailable -= IsAvailable;
+        
     }
 
-    public int GetBackOfPlayerHeight()
-    {
-        throw new NotImplementedException();
-    }
-
+    #endregion
+    
     public void CreatLevel(Level level, Action<GameObject> Playerreference)
     {
         currentLevelInteractable.Clear();
@@ -117,8 +122,10 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
 
                     if (level.startX == i && level.startY == j)
                     {
+                        
+                        //this Must be just dummy Pointer
                         playerPos = new Vector3Int(i,level.LevelLayout[i,j].cellHeight,j);
-                        PlayeForward = level.direction switch
+                        playerForward = level.direction switch
                         {
                             PlayerDirection.Down => new Vector3Int(0, 0, 1),
                             PlayerDirection.Up => new Vector3Int(0, 0, -1),
@@ -126,6 +133,7 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
                             _ => new Vector3Int(-1, 0, 0),
                         };
                         Player = Instantiate(PlayerPrefab, new Vector3(i, -10, j), Quaternion.identity);
+                        Player.transform.rotation=Quaternion.LookRotation(new Vector3(playerForward.x,playerForward.y,playerForward.z));
                         Player.transform.DOMove(new Vector3(i, 1, j), .8f).SetEase(ease);
                         Cells.Add(Player);
                     }
@@ -207,50 +215,56 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
         return playerPos;
     }
 
-
-    public void Rotate(bool isRight)
+    //
+    //there was a Problem with multiplying Vector.Forward in the Player Rotation So I Used This f
+    private void Rotate(bool isRight)
     {
+        
+        Util.ShowMessag($" Rotate is Trigerd {(isRight?" Rotating Toward Right":" Rotating Toward Left")} ");
         if (isRight)
         {
-            switch (PlayeForward.x)
+            switch (playerForward.x)
             {
-                case 0 when PlayeForward.y == 1:
-                    PlayeForward = new Vector3Int(1, 0,0);
+                case 0 when playerForward.z== 1:
+                    playerForward = new Vector3Int(1, 0,0);
                     break;
-                case 0 when PlayeForward.y == -1:
-                    PlayeForward = new Vector3Int(-1,0, 0);
+                case 0 when playerForward.z == -1:
+                    playerForward = new Vector3Int(-1,0, 0);
                     break;
-                case 1 when PlayeForward.y == 0:
-                    PlayeForward = new Vector3Int(0, 0,-1);
+                case 1 when playerForward.z == 0:
+                    playerForward = new Vector3Int(0, 0,-1);
                     break;
-                case -1 when PlayeForward.y == 0:
-                    PlayeForward = new Vector3Int(0, 0,1);
+                case -1 when playerForward.z == 0:
+                    playerForward = new Vector3Int(0, 0,1);
                     break;
             }
+           
         }
         else
         {
-            switch (PlayeForward.x)
+            switch (playerForward.x)
             {
-                case 0 when PlayeForward.y == 1:
-                    PlayeForward = new Vector3Int(-1,0, 0);
+                case 0 when playerForward.z == 1:
+                    playerForward = new Vector3Int(-1,0, 0);
                     break;
-                case 0 when PlayeForward.y == -1:
-                    PlayeForward = new Vector3Int(1, 0,0);
+                case 0 when playerForward.z == -1:
+                    playerForward = new Vector3Int(1, 0,0);
                     break;
-                case 1 when PlayeForward.y == 0:
-                    PlayeForward = new Vector3Int(0, 0,1);
+                case 1 when playerForward.z == 0:
+                    playerForward = new Vector3Int(0, 0,1);
                     break;
-                case -1 when PlayeForward.y == 0:
-                    PlayeForward = new Vector3Int(0, 0,-1);
+                case -1 when playerForward.z == 0:
+                    playerForward = new Vector3Int(0, 0,-1);
                     break;
             }
+          
         }
+       // Player.transform.rotation=Quaternion.LookRotation(new Vector3(playerForward.x,playerForward.y,playerForward.z));
     }
 
     public Vector3Int GetLocalForwardOfPlayer()
     {
-        return PlayeForward;
+        return playerForward;
     }
 
 
@@ -271,16 +285,13 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
     
     public bool IsAvailable(ICommand command)
     {
-        command.Requirement(currentLevel.height, currentLevel.width, GetPlayerPosition(), GetLocalForwardOfPlayer(),
+        return    command.Requirement(currentLevel.height, currentLevel.width, GetPlayerPosition(), GetLocalForwardOfPlayer(),
             GetPlayerCurrentHeight(), GetFrontOfPlayerHeight());
-        return false;
+       
     }
 
-    
-        
-    public void Submit(ICommand command)
+    public void UpdatePlayer()
     {
-        command.ExecutionInstruction(Player, GetPlayerPosition(), GetLocalForwardOfPlayer(),
-            GetPlayerCurrentHeight(), GetFrontOfPlayerHeight());
+        Player.transform.DOMove(playerPos, .2f);
     }
 }

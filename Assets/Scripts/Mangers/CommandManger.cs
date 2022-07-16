@@ -24,9 +24,9 @@ public class CommandManger : MonoBehaviour
     public List<ICommand> MainCommand = new List<ICommand>();
     public List<ICommand> P1Command = new List<ICommand>();
     public List<ICommand> p2Command = new List<ICommand>();
-    public Stack<ICommand> RewindStack = new Stack<ICommand>();
+    
 
-    public List<ICommand> RunTimeCommands = new List<ICommand>();
+  
 
     public void StopPlay()
     {
@@ -75,7 +75,7 @@ public class CommandManger : MonoBehaviour
         foreach (var item in MainCommand)
         {
             yield return StartCoroutine(item.Execute(subjectOFCommand));
-            RewindStack.Push(item);
+           
         }
     }
 

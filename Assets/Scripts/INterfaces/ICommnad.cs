@@ -13,6 +13,5 @@ public interface ICommand
     public bool Requirement(int height, int width, Vector3Int playerPosition, Vector3Int playerForward, int playerHeight,
         int forwardHeight);
 
-    public bool ExecutionInstruction(GameObject subjectOfCommand,Vector3Int playerPosition, Vector3Int playerForward, int playerHeight,
-        int forwardHeight);
+    
 }

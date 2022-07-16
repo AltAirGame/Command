@@ -583,6 +583,7 @@ GameObject:
   - component: {fileID: 745121951}
   - component: {fileID: 745121953}
   - component: {fileID: 745121954}
+  - component: {fileID: 745121955}
   m_Layer: 0
   m_Name: Mangers
   m_TagString: Untagged
@@ -647,10 +648,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ease: 28
-  DebugingIsOn: 0
-  Player: {fileID: 0}
-  playerPos: {x: 0, y: 0, z: 0}
-  PlayeForward: {x: 0, y: 0, z: 0}
+  DebugingIsOn: 1
   PlayerPrefab: {fileID: 4936801427884020507, guid: b24deb75773bd5e45ab05d67e51c996e, type: 3}
 --- !u!114 &745121947
 MonoBehaviour:
@@ -793,6 +791,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35b470aa7f10436ebf0af3ed2f9b966b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &745121955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 745121942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a024c2734b744ec0bbb9b73f8e3ac371, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &786875291
 GameObject:
   m_ObjectHideFlags: 0
@@ -880,7 +890,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 56.05
+  m_fontSize: 51.65
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1217,8 +1227,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 880, y: 0}
+  m_SizeDelta: {x: 1600, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1270805655
 MonoBehaviour:
@@ -1360,7 +1370,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1324771584
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1529,7 +1539,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 60.1
+  m_fontSize: 55.4
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -1713,7 +1723,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 19.9
+  m_fontSize: 18.35
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2361,7 +2371,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4431442048510334429, guid: 93a4f61589d14bc47b2beac5474b41b9, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 93a4f61589d14bc47b2beac5474b41b9, type: 3}
