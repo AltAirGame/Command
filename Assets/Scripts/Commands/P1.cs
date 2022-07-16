@@ -6,7 +6,7 @@ namespace MHamidi
 {
     public class P1 : ICommand
     {
-        public string name {    get { return this.GetType().Name.ToLower(); }
+        public string Name {    get { return this.GetType().Name.ToLower(); }
             set { } }
 
         public P1()

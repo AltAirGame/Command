@@ -126,9 +126,9 @@ public class UiManager : MonoBehaviour
                 var command = CommandFactory.GetCommand(item);
                 var button = buttonObject.GetComponent<GameButton>();
                 button.SetListener(() => { CommandManger.current.AddToCurrentBuffer(command); });
-                var icon = Resources.Load<Sprite>(command.name);
+                var icon = Resources.Load<Sprite>(command.Name);
                 button.SetIcon(icon);
-                button.gameObject.name = command.name;
+                button.gameObject.name = command.Name;
             }
         }
 
@@ -180,9 +180,9 @@ public class UiManager : MonoBehaviour
             {
                 CommandManger.current.RemoveFromBuffer(index, command,button.gameObject.GetInstanceID());
             });
-            var icon = Resources.Load<Sprite>(command.name);
+            var icon = Resources.Load<Sprite>(command.Name);
             button.SetIcon(icon);
-            button.gameObject.name = command.name;
+            button.gameObject.name = command.Name;
         }
         else if (index == 1)
         {
@@ -195,9 +195,9 @@ public class UiManager : MonoBehaviour
             {
                 CommandManger.current.RemoveFromBuffer(index, command,button.gameObject.GetInstanceID());
             });
-            var icon = Resources.Load<Sprite>(command.name);
+            var icon = Resources.Load<Sprite>(command.Name);
             button.SetIcon(icon);
-            button.gameObject.name = command.name;
+            button.gameObject.name = command.Name;
         }
 
         else if (index == 2)
@@ -211,9 +211,9 @@ public class UiManager : MonoBehaviour
             {
                 CommandManger.current.RemoveFromBuffer(index, command,button.gameObject.GetInstanceID());
             });
-            var icon = Resources.Load<Sprite>(command.name);
+            var icon = Resources.Load<Sprite>(command.Name);
             button.SetIcon(icon);
-            button.gameObject.name = command.name;
+            button.gameObject.name = command.Name;
         }
     }
 

@@ -7,8 +7,6 @@ using Utils.Singlton;
 
 namespace MHamidi
 {
-
-
     public class Move : ICommand
     {
         public Move()
@@ -16,7 +14,7 @@ namespace MHamidi
         }
 
 
-        public string name
+        public string Name
         {
             get { return this.GetType().Name.ToLower(); }
             set { }
@@ -32,109 +30,76 @@ namespace MHamidi
         {
             executeWasSuccessful = false;
             SubjectOfCommands = subject;
-            executeWasSuccessful = MoveAble();
+
             yield return Dipendency.Instance.StartCoroutine(MoveForward(subject, executeWasSuccessful));
         }
 
         public IEnumerator Undo(GameObject subject)
         {
-            SubjectOfCommands = subject;
+            yield return null;
+        }
 
-            yield return Dipendency.Instance.StartCoroutine(MoveBackWard(subject));
+        public bool Requirement(int height, int width, Vector3Int playerPosition, Vector3Int playerForward,
+            int playerHeight, int forwardHeight)
+        {
+            //Check Out Of Bound
+            if (playerPosition.x + playerForward.x < 0 && playerPosition.x + playerForward.x >= width)
+            {
+                return false;
+            }
+
+            if (playerPosition.z + playerForward.z < 0 && playerPosition.z + playerForward.z >= width)
+            {
+                return false;
+            }
+
+            if (Mathf.Abs(forwardHeight - playerHeight) > 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool ExecutionInstruction(GameObject subjectOfCommand, Vector3Int playerPosition, Vector3Int playerForward,
+            int playerHeight, int forwardHeight)
+        {
+            return false;
         }
 
 
         private IEnumerator MoveForward(GameObject subject, bool moveable)
         {
+            var available = Dipendency.Instance.LevelManger.IsAvailable(
+                this);
+            if (available)
+            {
+                Dipendency.Instance.LevelManger.Submit(this);
+            }
+
             var target = subject.transform.position + subject.transform.forward;
+            subject.GetComponentInChildren<IPlayerAnimation>().Walk();
+                
+            // if (moveable)
+            // {
+            //     subject.transform.DOMove(target, .2f, true).OnComplete(() => { Done = true; });
+            //
+            //     subject.GetComponentInChildren<IPlayerAnimation>().Walk();
+            //
+            //     yield return Util.GetWaitForSeconds(.2f);
+            //     yield break;
+            // }
+            // else
+            // {
+            //     subject.GetComponentInChildren<IPlayerAnimation>().Walk();
 
-
-            if (moveable)
-            {
-                subject.transform.DOMove(target, .2f, true).OnComplete(() => { Done = true; });
-
-                subject.GetComponentInChildren<IPlayerAnimation>().Walk();
-
-                yield return Util.GetWaitForSeconds(.2f);
-                yield break;
-            }
-            else
-            {
-                subject.GetComponentInChildren<IPlayerAnimation>().Walk();
-                yield return Util.GetWaitForSeconds(.1f);
-            }
-
-
-        }
-
-
-        private bool MoveAble()
-        {
-            if (IsForwardOutOfBound())
-            {
-                Util.ShowMessag($"Forward Was Out of Bound");
-                return false;
-            }
-
-            if (IsForawardJumpable())
-            {
-                Util.ShowMessag($"Forward Was Jumpable");
-                return false;
-            }
-
-            Util.ShowMessag($"Forward Was Not Jumpable");
-            return true;
-        }
-
-        private bool IsForawardJumpable()
-        {
-            if (Mathf.Abs(Dipendency.Instance.LevelManger.GetFrontOfPlayerHeight() -
-                          Dipendency.Instance.LevelManger.GetPlayerCurrentHeight()) > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public bool IsForwardOutOfBound()
-        {
-          
-            var forward = SubjectOfCommands.transform.position + SubjectOfCommands.transform.forward;
-            if (forward.x > 0 && forward.x <= Dipendency.Instance.LevelManger.currentLevel.height - 1 && forward.z > 0 &&
-                forward.z <= Dipendency.Instance.LevelManger.currentLevel.width - 1)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public bool IsForwardEmpty()
-        {
-            var forward = SubjectOfCommands.transform.position + SubjectOfCommands.transform.forward;
-            if (Dipendency.Instance.LevelManger.currentLevel.LevelLayout[(int)forward.x, (int)forward.z].cellHeight > 0)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private IEnumerator MoveBackWard(GameObject subject)
-        {
-            if (!executeWasSuccessful)
-            {
-                yield return Util.GetWaitForSeconds(.2f);
-                yield break;
-            }
-
-            var target = subject.transform.position - subject.transform.forward;
-            subject.transform.DOMove(target, .2f);
-            yield return Util.GetWaitForSeconds(.2f);
-
+            // }
+            yield return Util.GetWaitForSeconds(.1f);
         }
     }
+    
 }
+
+
+
+

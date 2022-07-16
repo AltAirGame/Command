@@ -6,7 +6,7 @@ namespace MHamidi
 {
     public class Jump : ICommand
     {
-        public string name
+        public string Name
         {
             get { return this.GetType().Name.ToLower(); }
             set { }

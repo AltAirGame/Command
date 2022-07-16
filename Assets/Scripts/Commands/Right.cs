@@ -7,7 +7,7 @@ namespace MHamidi
     
     public class Right : ICommand
     {
-        public string name
+        public string Name
         {
             get { return this.GetType().Name.ToLower(); }
             set { }

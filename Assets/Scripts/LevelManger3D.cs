@@ -12,13 +12,15 @@ public interface ILevelManger
     public Level currentLevel { get; set; }
     void Intereact();
     public Vector3Int GetFrontOfPlayerPosition();
-  
+
     public int GetFrontOfPlayerHeight();
     public int GetPlayerCurrentHeight();
-  
+
     public void CreatLevel(Level level, Action<GameObject> setSubjectOfCommand);
     public void ResetLevel();
     public bool CheckIfGameEnded();
+    bool IsAvailable(ICommand command);
+    void Submit(ICommand command);
 }
 
 
@@ -28,9 +30,8 @@ public class PlayeController
 
 public class LevelManger3D : MonoBehaviour, ILevelManger
 {
-
     public static event Action CurrentLevelEnded;
-    
+
     public Ease ease;
     public Level currentLevel { get; set; }
 
@@ -38,13 +39,15 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
     public static event Action<int> AddBufferSize;
     public static event Action<int> AddP1Size;
     public static event Action<int> AddP2Size;
-    [SerializeField] private bool DebugingIsOn=false;
+    [SerializeField] private bool DebugingIsOn = false;
     private List<GameObject> Cells;
     private GameCell[,] gameCells;
     private List<GameCell> currentLevelInteractable;
     public GameObject Player;
-    public Quaternion PlayeInitalRotaion=new Quaternion(0,0,0,0);
+    [SerializeField] private Vector3Int playerPos;
+    public Vector3Int PlayeForward;
     [SerializeField] private GameObject PlayerPrefab;
+
     public static ILevelManger Instance;
 
     private void Awake()
@@ -83,9 +86,11 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
 
     public void ResetLevel()
     {
-        Player.transform.position = new Vector3(currentLevel.startX,1f+((currentLevel.LevelLayout[currentLevel.startX,currentLevel.startY].cellHeight-1)*.2f),currentLevel.startY);
-        Player.transform.rotation = PlayeInitalRotaion;
-       
+        Player.transform.position = new Vector3(currentLevel.startX,
+            1f + ((currentLevel.LevelLayout[currentLevel.startX, currentLevel.startY].cellHeight - 1) * .2f),
+            currentLevel.startY);
+
+
         foreach (var item in currentLevelInteractable)
         {
             item.TurnOff();
@@ -107,12 +112,20 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
                     var cellType = level.LevelLayout[i, j].Type == CellType.Interactable
                         ? GameCellType.InteractableOff
                         : GameCellType.Simple;
-                    SetupCell(cell, i, j,level.LevelLayout[i, j].cellHeight, cellType);
+                    SetupCell(cell, i, j, level.LevelLayout[i, j].cellHeight, cellType);
 
 
                     if (level.startX == i && level.startY == j)
                     {
-                        Player = Instantiate(PlayerPrefab, new Vector3(i, -10, j), PlayeInitalRotaion);
+                        playerPos = new Vector3Int(i,level.LevelLayout[i,j].cellHeight,j);
+                        PlayeForward = level.direction switch
+                        {
+                            PlayerDirection.Down => new Vector3Int(0, 0, 1),
+                            PlayerDirection.Up => new Vector3Int(0, 0, -1),
+                            PlayerDirection.Left => new Vector3Int(1, 0, 0),
+                            _ => new Vector3Int(-1, 0, 0),
+                        };
+                        Player = Instantiate(PlayerPrefab, new Vector3(i, -10, j), Quaternion.identity);
                         Player.transform.DOMove(new Vector3(i, 1, j), .8f).SetEase(ease);
                         Cells.Add(Player);
                     }
@@ -143,12 +156,12 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
         Cells.Clear();
     }
 
-    private void SetupCell(GameObject cell, int i, int j,int height, GameCellType cellType)
+    private void SetupCell(GameObject cell, int i, int j, int height, GameCellType cellType)
     {
         Cells.Add(cell);
         gameCells[i, j] = cell.GetComponent<GameCell>();
         gameCells[i, j].Setup(cellType);
-        gameCells[i,j].SetupDebugerPart(new Vector2Int(i,j),height,DebugingIsOn);
+        gameCells[i, j].SetupDebugerPart(new Vector2Int(i, j), height, DebugingIsOn);
         if (cellType is GameCellType.InteractableOff)
         {
             currentLevelInteractable.Add(gameCells[i, j]);
@@ -176,50 +189,98 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
 
     public void Intereact()
     {
-        gameCells[(int)Player.transform.position.x, (int)Player.transform.position.z].Interact();
+        var pos = GetPlayerPosition();
+        //gameCells[(int)Player.transform.position.x, (int)Player.transform.position.z].Interact();
+        gameCells[pos.x, pos.z].Interact();
         CheckIfGameEnded();
     }
-    
+
 
     public Vector3Int GetFrontOfPlayerPosition()
     {
-
-        var fp= GetPlayerPosition() + GetLocalForwardOfPlayer();
-        Util.ShowMessag($" Front is {fp}");
+        var fp = GetPlayerPosition() + GetLocalForwardOfPlayer();
         return fp;
     }
 
     public Vector3Int GetPlayerPosition()
     {
-        return Vector3Int.FloorToInt(Player.transform.position);
+        return playerPos;
+    }
+
+
+    public void Rotate(bool isRight)
+    {
+        if (isRight)
+        {
+            switch (PlayeForward.x)
+            {
+                case 0 when PlayeForward.y == 1:
+                    PlayeForward = new Vector3Int(1, 0,0);
+                    break;
+                case 0 when PlayeForward.y == -1:
+                    PlayeForward = new Vector3Int(-1,0, 0);
+                    break;
+                case 1 when PlayeForward.y == 0:
+                    PlayeForward = new Vector3Int(0, 0,-1);
+                    break;
+                case -1 when PlayeForward.y == 0:
+                    PlayeForward = new Vector3Int(0, 0,1);
+                    break;
+            }
+        }
+        else
+        {
+            switch (PlayeForward.x)
+            {
+                case 0 when PlayeForward.y == 1:
+                    PlayeForward = new Vector3Int(-1,0, 0);
+                    break;
+                case 0 when PlayeForward.y == -1:
+                    PlayeForward = new Vector3Int(1, 0,0);
+                    break;
+                case 1 when PlayeForward.y == 0:
+                    PlayeForward = new Vector3Int(0, 0,1);
+                    break;
+                case -1 when PlayeForward.y == 0:
+                    PlayeForward = new Vector3Int(0, 0,-1);
+                    break;
+            }
+        }
     }
 
     public Vector3Int GetLocalForwardOfPlayer()
     {
-
-        var PlayerRotation = Player.transform.rotation;
-        var Forward = Vector3.forward;
-
-        var forwrd = Quaternion.Euler(PlayerRotation.x,PlayerRotation.y,PlayerRotation.z) * Forward;
-        var fp= Vector3Int.FloorToInt(forwrd);
-       
-        return fp;
+        return PlayeForward;
     }
 
-    
+
     public int GetFrontOfPlayerHeight()
     {
-      
-        var fh=currentLevel.LevelLayout[GetFrontOfPlayerPosition().x, GetFrontOfPlayerPosition().z].cellHeight;
+        var fh = currentLevel.LevelLayout[GetFrontOfPlayerPosition().x, GetFrontOfPlayerPosition().z].cellHeight;
         return fh;
     }
 
-  
 
     public int GetPlayerCurrentHeight()
     {
-        var position = Vector3Int.FloorToInt(Player.transform.position);
-        var ch= currentLevel.LevelLayout[position.x, position.z].cellHeight;
-        return ch;
+        //var position = GetPlayerPosition();
+        //var ch = currentLevel.LevelLayout[position.x, position.z].cellHeight;
+        return GetPlayerPosition().y;
+    }
+    
+    
+    public bool IsAvailable(ICommand command)
+    {
+        command.Requirement(currentLevel.height, currentLevel.width, GetPlayerPosition(), GetLocalForwardOfPlayer(),
+            GetPlayerCurrentHeight(), GetFrontOfPlayerHeight());
+        return false;
+    }
+
+    
+        
+    public void Submit(ICommand command)
+    {
+        command.ExecutionInstruction(Player, GetPlayerPosition(), GetLocalForwardOfPlayer(),
+            GetPlayerCurrentHeight(), GetFrontOfPlayerHeight());
     }
 }

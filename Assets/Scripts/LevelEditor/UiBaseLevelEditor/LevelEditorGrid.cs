@@ -45,7 +45,7 @@ public class LevelEditorGrid : MonoBehaviour
         foreach (var item in listofCommands)
         {
             var tempToggle=Instantiate(togglePrefab);
-            tempToggle.SetNameOfToggle(item.name);
+            tempToggle.SetNameOfToggle(item.Name);
             _toggles.Add(tempToggle);
             tempToggle.transform.SetParent(ToggleParrent,false);
             tempToggle.gameObject.SetActive(false);
