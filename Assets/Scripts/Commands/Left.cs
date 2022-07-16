@@ -21,9 +21,10 @@ namespace MHamidi
 
       
         public IEnumerator Execute(GameObject subject)
-        {
+        { 
+            yield return Util.GetWaitForSeconds(.2f);
             TurnLeft(subject);
-            yield return null;
+           
         }
 
         public IEnumerator Undo(GameObject subject)
