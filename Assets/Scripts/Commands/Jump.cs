@@ -131,8 +131,8 @@ namespace MHamidi
             float timeFrame = 0;
             var position0 = new Vector3(start.x, start.y+(start.y-1*.4f), start.z);
             var position1 = new Vector3(start.x, start.y*.4f+1, start.z);
-            var position2 = new Vector3(end.x, end.y*.4f+1, end.z);
-            var position3 = new Vector3(end.x, end.y+(end.y-1*.4f), end.z);
+            var position2 = new Vector3(end.x, end.y*.4f, end.z);
+            var position3 = new Vector3(end.x, (end.y-1*.4f), end.z);
             // Vector3 p1 = new Vector3(p0.x, p0.y + 1, p0.z);
             // Vector3 p2 = new Vector3(p0.x + 1, p0.y + 1, p0.z);
             // Vector3 p3 = p0;
