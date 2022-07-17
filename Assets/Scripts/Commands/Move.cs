@@ -38,19 +38,22 @@ namespace MHamidi
             //Check Out Of Bound
             if (playerPosition.x + playerForward.x < 0 && playerPosition.x + playerForward.x >= width)
             {
+                Util.ShowMessag($"[{this.GetType().Name}] X was out of Bound",TextColor.Red);
                 return false;
             }
 
             if (playerPosition.z + playerForward.z < 0 && playerPosition.z + playerForward.z >= width)
-            {
+            { 
+                Util.ShowMessag($"[{this.GetType().Name}] X was out of Bound",TextColor.Red);
                 return false;
             }
 
             if (Mathf.Abs(forwardHeight - playerHeight) > 0)
             {
+                Util.ShowMessag($"[{this.GetType().Name}] Height Difference was incorrect {forwardHeight-playerHeight} ",TextColor.Red);
                 return false;
             }
-
+            Util.ShowMessag($"[{this.GetType().Name}] Was Available",TextColor.Green);
             return true;
         }
 

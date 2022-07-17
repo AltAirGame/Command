@@ -94,7 +94,15 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
         Player.transform.position = new Vector3(currentLevel.startX,
             1f + ((currentLevel.LevelLayout[currentLevel.startX, currentLevel.startY].cellHeight - 1) * .2f),
             currentLevel.startY);
-
+        playerPos = new Vector3Int(currentLevel.startX,
+            currentLevel.LevelLayout[currentLevel.startX, currentLevel.startY].cellHeight, currentLevel.startY);
+        playerForward = currentLevel.direction switch
+        {
+            PlayerDirection.Down => new Vector3Int(0, 0, 1),
+            PlayerDirection.Up => new Vector3Int(0, 0, -1),
+            PlayerDirection.Left => new Vector3Int(1, 0, 0),
+            _ => new Vector3Int(-1, 0, 0),
+        };
 
         foreach (var item in currentLevelInteractable)
         {
@@ -272,20 +280,22 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
     {
         var fh = currentLevel.LevelLayout[GetFrontOfPlayerPosition().x, GetFrontOfPlayerPosition().z].cellHeight;
         return fh;
+        
     }
 
-
+    
     public int GetPlayerCurrentHeight()
     {
         //var position = GetPlayerPosition();
         //var ch = currentLevel.LevelLayout[position.x, position.z].cellHeight;
+                
         return GetPlayerPosition().y;
     }
     
     
     public bool IsAvailable(ICommand command)
     {
-        return    command.Requirement(currentLevel.height, currentLevel.width, GetPlayerPosition(), GetLocalForwardOfPlayer(),
+        return command.Requirement(currentLevel.height, currentLevel.width, GetPlayerPosition(), GetLocalForwardOfPlayer(),
             GetPlayerCurrentHeight(), GetFrontOfPlayerHeight());
        
     }

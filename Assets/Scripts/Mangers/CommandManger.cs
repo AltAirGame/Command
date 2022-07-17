@@ -19,14 +19,11 @@ public class CommandManger : MonoBehaviour
     public GameObject subjectOFCommand;
     public static CommandManger current;
 
-    //A Pointer To Correc Command Buffer
+    //A Pointer To Correct Command Buffer
 
     public List<ICommand> MainCommand = new List<ICommand>();
     public List<ICommand> P1Command = new List<ICommand>();
     public List<ICommand> p2Command = new List<ICommand>();
-    
-
-  
 
     public void StopPlay()
     {
@@ -34,8 +31,6 @@ public class CommandManger : MonoBehaviour
         Dipendency.Instance.LevelManger.ResetLevel();
         UpdatePlay?.Invoke(() => { Play(); }, "Play");
     }
-
-
     private void Awake()
     {
         current = this;
@@ -44,7 +39,6 @@ public class CommandManger : MonoBehaviour
         var commandA = new Move();
         var commandB = new Move();
     }
-
     public void SetSubjectOfCommand(GameObject subjectRefrence)
     {
         subjectOFCommand = subjectRefrence;
@@ -53,22 +47,16 @@ public class CommandManger : MonoBehaviour
 
         UpdatePlay?.Invoke(() => { Play(); }, "PlayGame");
     }
-
     private void ClearAllBuffers()
     {
         MainCommand.Clear();
         P1Command.Clear();
         p2Command.Clear();
     }
-
-
-
-
     public void Play()
     {
         StartCoroutine(PlayWithDelay());
     }
-
     private IEnumerator PlayWithDelay()
     {
         Util.ShowMessag($" the Current MainCommand has {MainCommand.Count} item in it");
@@ -80,9 +68,6 @@ public class CommandManger : MonoBehaviour
         }
        
     }
-
-    //Redo This part 
-
     public void AddToCurrentBuffer(ICommand command)
     {
         if (curentBufferIndex == 0)
@@ -110,7 +95,6 @@ public class CommandManger : MonoBehaviour
             }
         }
     }
-
     public void RemoveFromBuffer(int bufferIndex, ICommand command,int instanceId)
     {
          switch (bufferIndex)
@@ -141,13 +125,11 @@ public class CommandManger : MonoBehaviour
              }
          }
     }
-
     private void ChangeBuffer(int index)
     {
         curentBufferIndex = index;
         
     }
-
     public void SetCurrentBuffer(int index)
     {
         ChangeBuffer(index);
