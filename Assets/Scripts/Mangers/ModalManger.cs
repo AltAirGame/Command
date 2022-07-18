@@ -2,6 +2,7 @@ using System;
 using MHamidi.Helper;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Utils.Singlton;
 
 namespace MHamidi.UI.UI_Messages
 {
@@ -22,7 +23,7 @@ namespace MHamidi.UI.UI_Messages
         }
         private void ShowModal()
         {
-            var modalObject=Pool.Instance.Get("Modal");
+            var modalObject=Dipendency.Instance.Pool.Get("Modal");
             modalObject.SetActive(true);
             modalObject.transform.SetParent(modalMessageParent);
             var modal=modalObject.GetComponent<ModalWindow>();
@@ -30,7 +31,7 @@ namespace MHamidi.UI.UI_Messages
         }
         private void ShowModal(string header, string message)
         {
-            var modalObject=Pool.Instance.Get("Modal");
+            var modalObject=Dipendency.Instance.Pool.Get("Modal");
             modalObject.SetActive(true);
             modalObject.transform.SetParent(modalMessageParent);
             var modal=modalObject.GetComponent<ModalWindow>();
@@ -38,7 +39,7 @@ namespace MHamidi.UI.UI_Messages
         }
         private void ShowModal(ModalWindowData data)
         {
-            var modalObject=Pool.Instance.Get("Modal");
+            var modalObject=Dipendency.Instance.Pool.Get("Modal");
             modalObject.SetActive(true);
             modalObject.transform.SetParent(modalMessageParent,false);
             var modal=modalObject.GetComponent<ModalWindow>();

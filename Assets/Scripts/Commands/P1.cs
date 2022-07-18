@@ -6,7 +6,7 @@ namespace MHamidi
 {
     public class P1 : ICommand
     {
-        public string name {    get { return this.GetType().Name.ToLower(); }
+        public string Name {    get { return this.GetType().Name.ToLower(); }
             set { } }
 
         public P1()
@@ -16,8 +16,7 @@ namespace MHamidi
 
         public GameObject SubjectOfCommands { get; set; }
 
-        public bool Done { get; set; }
-        public bool executeWasSuccessful { get; set; }
+   
 
         public IEnumerator Execute(GameObject subject)
         {
@@ -35,7 +34,15 @@ namespace MHamidi
             yield return null;
         }
 
-      
-        
+        public bool Requirement(int height, int width, Vector3Int playerPosition, Vector3Int playerForward, int playerHeight,
+            int forwardHeight)
+        {
+            return true;
+        }
+
+        public void ExecutionInstruction(ILevelManger levelManger)
+        {
+            
+        }
     }
 }

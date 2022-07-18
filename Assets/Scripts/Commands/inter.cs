@@ -6,7 +6,7 @@ namespace MHamidi
 {
     public class inter : ICommand
     {
-        public string name
+        public string Name
         {
             get { return this.GetType().Name.ToLower(); }
             set { }
@@ -35,6 +35,19 @@ namespace MHamidi
             yield return null;
         }
 
+        public bool Requirement(int height, int width, Vector3Int playerPosition, Vector3Int playerForward, int playerHeight,
+            int forwardHeight)
+        {
+            return true;
+        }
+
+        public void ExecutionInstruction(ILevelManger levelManger)
+        {
+            
+        }
+
+        
+
 
         public void Interact()
         {
@@ -50,7 +63,7 @@ namespace MHamidi
         {
           
 
-            Dipendency.Instance.LevelManger.UpdateCellInteraction();
+            Dipendency.Instance.LevelManger.Intereact();
         }
     }
 }

@@ -5,30 +5,12 @@ using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 
-
-public class CellLayout
+public enum PlayerDirection
 {
-    public CellType Type;
-    public int cellHeight;
-
-    public CellLayout()
-    {
-        
-    }
-
-    public CellLayout(JToken token)
-    {
-        this.cellHeight=Util.NullabelCaster.CastInt(token["cellHeight"]);
-        var castedType = Util.NullabelCaster.CastInt(token["Type"]);
-        Type = (CellType)castedType;
-    }
-
-    public CellLayout(int heigt, CellType type)
-    {
-        this.cellHeight = heigt;
-        this.Type = type;
-    }
+    Up,Down,Right,Left
+    
 }
+
 [System.Serializable]
 public class Level
 {
@@ -43,7 +25,7 @@ public class Level
     public int maxP1Size;
     public int maxP2Size;
     public Vector2Int Start;
-   
+    public PlayerDirection direction;
     public CellLayout[,] LevelLayout;
 
 
@@ -54,7 +36,8 @@ public class Level
 
     public Level(JToken token)
     {
-       
+        var castedType = Util.NullabelCaster.CastInt(token["direction"]);
+        direction = (PlayerDirection)castedType;
         number = Util.NullabelCaster.CastInt(token["number"]);
         startX = Util.NullabelCaster.CastInt(token["startX"]);
         startY = Util.NullabelCaster.CastInt(token["startY"]);
@@ -85,8 +68,9 @@ public class Level
 
 
 
-    public Level(int number,List<string> availableCommand,CellLayout[,] levelLayout, int bufferSizeCurrentValue, int p1SizeCurrentValue, int p2SizeCurrentValue,int StartX,int StartY)
+    public Level(int number,List<string> availableCommand,PlayerDirection direction,CellLayout[,] levelLayout, int bufferSizeCurrentValue, int p1SizeCurrentValue, int p2SizeCurrentValue,int StartX,int StartY)
     {
+        this.direction = direction;
         this.number = number;
         startX = StartX;
         startY = StartY;

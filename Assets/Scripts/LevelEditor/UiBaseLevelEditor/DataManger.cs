@@ -1,35 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 
 namespace MHamidi
 {
-
-
-    public interface IData
-    {
-        public PlayerData playerData { get; set; }
-        public GameData gameData { get; set; }
-        
-        public void AddTOLevels(Level level);
-        public void EditPlayedData(PlayerData playerData);
-
-    }
-
-
     public class DataManger : MonoBehaviour, IData
     {
 
 
 
-        public static DataManger Instance;
+       
 
-        private void Awake()
-        {
-            Instance = this;
-        }
+     
 
         private const string playerDataName = "Player.txt";
         private const string gameDataName = "Game.txt";
@@ -37,32 +22,27 @@ namespace MHamidi
         public GameData gameData { get; set; }
         public void AddTOLevels(Level level)
         {
-            if (gameData is null)
-            {
-                gameData = new GameData();
-            }
+            
+            
+            
+            gameData ??= new GameData();
+            gameData.levels ??= new List<Level>();
 
-            if (gameData.levels is null)
+            var tempLevel=gameData.levels.Where(x => x.number == level.number).First();
+            var index= gameData.levels.IndexOf(tempLevel);
+            if (tempLevel is null)
             {
-                gameData.levels = new List<Level>();
                 gameData.levels.Add(level);
             }
             else
             {
-                var name = level.number;
-                if (name<gameData.levels.Count)
-                {
-
-                        gameData.levels[name] = level;
-
-                }
-                else
-                {
-                    gameData.levels.Add(level);
-                    
-                }
-                
+                gameData.levels[index]= level;
             }
+
+         
+            Repository.current.SavePlayerData(playerDataName, playerData);
+            Repository.current.SaveGameData(gameDataName, gameData);
+            LoadGameData();
             
             
         }

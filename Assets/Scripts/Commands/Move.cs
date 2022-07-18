@@ -7,8 +7,6 @@ using Utils.Singlton;
 
 namespace MHamidi
 {
-
-
     public class Move : ICommand
     {
         public Move()
@@ -16,7 +14,7 @@ namespace MHamidi
         }
 
 
-        public string name
+        public string Name
         {
             get { return this.GetType().Name.ToLower(); }
             set { }
@@ -24,122 +22,61 @@ namespace MHamidi
 
         public GameObject SubjectOfCommands { get; set; }
 
-        public bool Done { get; set; }
-
-        public bool executeWasSuccessful { get; set; }
-
         public IEnumerator Execute(GameObject subject)
         {
-            executeWasSuccessful = false;
-            SubjectOfCommands = subject;
-            executeWasSuccessful = MoveAble();
-            yield return Dipendency.Instance.StartCoroutine(MoveForward(subject, executeWasSuccessful));
+            yield return Dipendency.Instance.StartCoroutine(MoveForward(subject));
         }
 
         public IEnumerator Undo(GameObject subject)
         {
-            SubjectOfCommands = subject;
+            yield return null;
+        }
 
-            yield return Dipendency.Instance.StartCoroutine(MoveBackWard(subject));
+        public bool Requirement(int height, int width, Vector3Int playerPosition, Vector3Int playerForward,
+            int playerHeight, int forwardHeight)
+        {
+            //Check Out Of Bound
+            if (playerPosition.x + playerForward.x < 0 && playerPosition.x + playerForward.x >= width)
+            {
+                Util.ShowMessag($"[{this.GetType().Name}] X was out of Bound",TextColor.Red);
+                return false;
+            }
+
+            if (playerPosition.z + playerForward.z < 0 && playerPosition.z + playerForward.z >= width)
+            { 
+                Util.ShowMessag($"[{this.GetType().Name}] X was out of Bound",TextColor.Red);
+                return false;
+            }
+
+            if (Mathf.Abs(forwardHeight - playerHeight) > 0)
+            {
+                Util.ShowMessag($"[{this.GetType().Name}] Height Difference was incorrect {forwardHeight-playerHeight} ",TextColor.Red);
+                return false;
+            }
+            Util.ShowMessag($"[{this.GetType().Name}] Was Available",TextColor.Green);
+            return true;
         }
 
 
-        private IEnumerator MoveForward(GameObject subject, bool moveable)
+        private IEnumerator MoveForward(GameObject subject)
         {
-            var target = subject.transform.position + subject.transform.forward;
-
-
-            if (moveable)
+            var available = Dipendency.Instance.LevelManger.IsAvailable(
+                this);
+            if (available)
             {
-                subject.transform.DOMove(target, .2f, true).OnComplete(() => { Done = true; });
-
+                var levelManger = Dipendency.Instance.LevelManger;
+                levelManger.playerPos += levelManger.playerForward;
+                levelManger.UpdatePlayer();
                 subject.GetComponentInChildren<IPlayerAnimation>().Walk();
-
                 yield return Util.GetWaitForSeconds(.2f);
-                yield break;
             }
             else
             {
                 subject.GetComponentInChildren<IPlayerAnimation>().Walk();
-                yield return Util.GetWaitForSeconds(.1f);
-            }
-
-
-        }
-
-
-        private bool MoveAble()
-        {
-            if (IsForwardOutOfBound())
-            {
-                Util.ShowMessag($"Forward Was Out of Bound");
-                return false;
-            }
-
-            if (IsForawardJumpable())
-            {
-                Util.ShowMessag($"Forward Was Jumpable");
-                return false;
-            }
-
-            Util.ShowMessag($"Forward Was Not Jumpable");
-            return true;
-        }
-
-        private bool IsForawardJumpable()
-        {
-            if (Mathf.Abs(Dipendency.Instance.LevelManger.GetFrontOfPlayeHeight() -
-                          Dipendency.Instance.LevelManger.GetPlayeCurrentHeight()) > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public bool IsForwardOutOfBound()
-        {
-            Util.ShowMessag(
-                $" The PlayerPosition is {SubjectOfCommands.transform.position} and the PlayeForward is {SubjectOfCommands.transform.forward} and the target is {SubjectOfCommands.transform.position + SubjectOfCommands.transform.forward} ",
-                TextColor.Yellow);
-            var forward = SubjectOfCommands.transform.position + SubjectOfCommands.transform.forward;
-            if (forward.x > 0 && forward.x <= Dipendency.Instance.LevelManger.currentLevel.height - 1 && forward.z > 0 &&
-                forward.z <= Dipendency.Instance.LevelManger.currentLevel.width - 1)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        public bool IsForwardEmpty()
-        {
-            Util.ShowMessag(
-                $" The PlayerPosition is {SubjectOfCommands.transform.position} and the PlayeForward is {SubjectOfCommands.transform.forward} and the target is {SubjectOfCommands.transform.position + SubjectOfCommands.transform.forward} ",
-                TextColor.Green);
-            var forward = SubjectOfCommands.transform.position + SubjectOfCommands.transform.forward;
-            if (Dipendency.Instance.LevelManger.currentLevel.LevelLayout[(int)forward.x, (int)forward.z].cellHeight > 0)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private IEnumerator MoveBackWard(GameObject subject)
-        {
-            if (!executeWasSuccessful)
-            {
                 yield return Util.GetWaitForSeconds(.2f);
-                yield break;
             }
 
-            var target = subject.transform.position - subject.transform.forward;
-            subject.transform.DOMove(target, .2f);
-            yield return Util.GetWaitForSeconds(.2f);
-
+            
         }
     }
 }

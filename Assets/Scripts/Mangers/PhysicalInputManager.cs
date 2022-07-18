@@ -3,7 +3,15 @@ using UnityEngine;
 
 namespace MHamidi
 {
-    public class PhysicalInputManager : MonoBehaviour
+    public interface IPhysicalInputManager
+    { public void OnQuit()
+        {
+            
+        }
+
+    }
+
+    public class PhysicalInputManager : MonoBehaviour, IPhysicalInputManager
     {
         private void Awake()
         {
@@ -12,6 +20,12 @@ namespace MHamidi
         }
 
         public static event Action QuitApplication;
+
+        public void OnQuit()
+        {
+            CallQuit();
+            
+        }
 
         private void Update()
         {

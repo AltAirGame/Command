@@ -5,8 +5,13 @@ using UnityEngine;
 
 public interface ICommand
 {
-    public string name { get; set; }
+    public string Name { get; set; }
     public GameObject SubjectOfCommands { get; set; }
-    IEnumerator Execute(GameObject subject);
-    IEnumerator  Undo(GameObject subject);
+    public IEnumerator Execute(GameObject subject);
+    public IEnumerator  Undo(GameObject subject);
+
+    public bool Requirement(int height, int width, Vector3Int playerPosition, Vector3Int playerForward, int playerHeight,
+        int forwardHeight);
+
+    
 }

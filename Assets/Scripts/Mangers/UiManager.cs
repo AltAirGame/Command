@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MHamidi;
 using MHamidi.Helper;
 using MHamidi.UI.UI_Messages;
@@ -8,8 +9,16 @@ using UnityEngine;
 using UnityEngine.UI;
 using Utils.Singlton;
 
-public class UiManager : MonoBehaviour
+public interface IUiManager
 {
+    public void ShowMessage(ModalWindowData data);
+
+}
+
+public class UiManager : MonoBehaviour, IUiManager
+{
+    [SerializeField]
+    private MenuController MenuController;
     public static event Action ShowModal;
     public static event Action<string, string> ShowModalString;
     public static event Action<ModalWindowData> ShowModalData;
@@ -21,6 +30,8 @@ public class UiManager : MonoBehaviour
     [Header("--------------------------------BufferParent---")] [SerializeField]
     private RectTransform BufferParrent;
 
+  
+    [Space(10)]
     private RectTransform mainBuffer;
     private RectTransform P1Buffer;
     private RectTransform P2Buffer;
@@ -34,6 +45,7 @@ public class UiManager : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI playText;
 
+   
     //------------ 
     private void OnEnable()
     {
@@ -44,16 +56,24 @@ public class UiManager : MonoBehaviour
         CommandManger.ChangePlayButtonInteractivityStatus += ChangePlayButtonInterActivityStatus;
         CommandManger.AddToBuffer += AddToBufferUi;
         CommandManger.RemoveAtIndexofBuffer += RemoveFromBufferUi;
+        GameManger.UpdateLevelNameText += UpdateLevelnameText;
+        
     }
+
+   
 
 
     private void OnDisable()
     {
+        
         PhysicalInputManager.QuitApplication -= ShowQuitingDialogue;
+        GameManger.UpdateLevelNameText -= UpdateLevelnameText;
         GameManger.UpdatePlayerInput -= ShowPlayrInput;
+        GameManger.UpdateBufferUi-= ShowBufferUi;
         CommandManger.UpdatePlay -= UpdatePlayButton;
-        CommandManger.ChangePlayButtonInteractivityStatus -= ChangePlayButtonInterActivityStatus;
+        CommandManger.ChangePlayButtonInteractivityStatus += ChangePlayButtonInterActivityStatus;
         CommandManger.AddToBuffer -= AddToBufferUi;
+        CommandManger.RemoveAtIndexofBuffer -= RemoveFromBufferUi;
     }
 
     //-----------
@@ -65,6 +85,8 @@ public class UiManager : MonoBehaviour
     }
 
     //------------
+
+    #region ModalMessage
 
     private void ShowModalMessage()
     {
@@ -86,6 +108,11 @@ public class UiManager : MonoBehaviour
         ShowModalData?.Invoke(data);
     }
 
+
+    #endregion
+
+    #region InGameUi
+
     private void ShowPlayrInput(List<string> avilableCommand)
     {
         ClearAllChildren();
@@ -98,7 +125,7 @@ public class UiManager : MonoBehaviour
             foreach (var item in playerInputParent.GetComponentsInChildren<GameButton>())
             {
                 item.gameObject.SetActive(false);
-                item.transform.SetParent(Pool.Instance.transform, false);
+                item.transform.SetParent(Dipendency.Instance.Pool.GetGameObject().transform, false);
             }
         }
 
@@ -106,28 +133,28 @@ public class UiManager : MonoBehaviour
         {
             foreach (var item in avilableCommand)
             {
-                var buttonObject = Pool.Instance.Get("GameButton");
+                var buttonObject = Dipendency.Instance.Pool.Get("GameButton");
                 buttonObject.transform.SetParent(playerInputParent, false);
                 buttonObject.SetActive(true);
                 var command = CommandFactory.GetCommand(item);
                 var button = buttonObject.GetComponent<GameButton>();
                 button.SetListener(() => { CommandManger.current.AddToCurrentBuffer(command); });
-                var icon = Resources.Load<Sprite>(command.name);
+                var icon = Resources.Load<Sprite>(command.Name);
                 button.SetIcon(icon);
-                button.gameObject.name = command.name;
+                button.gameObject.name = command.Name;
             }
         }
 
         #endregion
     }
 
-    private void ShowBufferUi(int buffer, int p1, int p2)
+      private void ShowBufferUi(int buffer, int p1, int p2)
     {
         var ActiveBuffers = BufferParrent.GetComponentsInChildren<BufferUI>();
         foreach (var item in ActiveBuffers)
         {
             item.gameObject.SetActive(false);
-            item.transform.SetParent(Pool.Instance.transform, false);
+            item.transform.SetParent(Dipendency.Instance.Pool.GetGameObject().transform, false);
         }
 
         mainBuffer = CreatBuffer(buffer, "Main", 0);
@@ -142,7 +169,7 @@ public class UiManager : MonoBehaviour
                 return null;
             }
 
-            var bufferObject = Pool.Instance.Get("Buffer");
+            var bufferObject = Dipendency.Instance.Pool.Get("Buffer");
             bufferObject.SetActive(true);
             bufferObject.transform.SetParent(BufferParrent, false);
             var tempBuffer = bufferObject.GetComponent<BufferUI>();
@@ -157,69 +184,75 @@ public class UiManager : MonoBehaviour
     {
         if (index == 0)
         {
-            var buttonObject = Pool.Instance.Get("GameButton");
+            var buttonObject = Dipendency.Instance.Pool.Get("GameButton");
             mainBufferButtons.Add(buttonObject);
             buttonObject.transform.SetParent(mainBuffer, false);
             buttonObject.SetActive(true);
             var button = buttonObject.GetComponent<GameButton>();
             button.SetListener(() =>
             {
-                CommandManger.current.RemoveFromBuffer(index, command);
+                CommandManger.current.RemoveFromBuffer(index, command,button.gameObject.GetInstanceID());
             });
-            var icon = Resources.Load<Sprite>(command.name);
+            var icon = Resources.Load<Sprite>(command.Name);
             button.SetIcon(icon);
-            button.gameObject.name = command.name;
+            button.gameObject.name = command.Name;
         }
         else if (index == 1)
         {
-            var buttonObject = Pool.Instance.Get("GameButton");
+            var buttonObject = Dipendency.Instance.Pool.Get("GameButton");
             p1BufferButtons.Add(buttonObject);
             buttonObject.transform.SetParent(P1Buffer, false);
             buttonObject.SetActive(true);
             var button = buttonObject.GetComponent<GameButton>();
             button.SetListener(() =>
             {
-                CommandManger.current.RemoveFromBuffer(index, command);
+                CommandManger.current.RemoveFromBuffer(index, command,button.gameObject.GetInstanceID());
             });
-            var icon = Resources.Load<Sprite>(command.name);
+            var icon = Resources.Load<Sprite>(command.Name);
             button.SetIcon(icon);
-            button.gameObject.name = command.name;
+            button.gameObject.name = command.Name;
         }
 
         else if (index == 2)
         {
-            var buttonObject = Pool.Instance.Get("GameButton");
+            var buttonObject = Dipendency.Instance.Pool.Get("GameButton");
             p2BufferButtons.Add(buttonObject);
             buttonObject.transform.SetParent(P2Buffer, false);
             buttonObject.SetActive(true);
             var button = buttonObject.GetComponent<GameButton>();
             button.SetListener(() =>
             {
-                CommandManger.current.RemoveFromBuffer(index, command);
+                CommandManger.current.RemoveFromBuffer(index, command,button.gameObject.GetInstanceID());
             });
-            var icon = Resources.Load<Sprite>(command.name);
+            var icon = Resources.Load<Sprite>(command.Name);
             button.SetIcon(icon);
-            button.gameObject.name = command.name;
+            button.gameObject.name = command.Name;
         }
     }
 
-    private void RemoveFromBufferUi(int index, int buttonindex)
+    private void RemoveFromBufferUi(int index, int buttonindex,int Id)
     {
         if (index == 0)
         {
-            mainBufferButtons[buttonindex].SetActive(false);
-            mainBufferButtons.RemoveAt(buttonindex);
+            var buffer = mainBufferButtons.Where(x => x.GetInstanceID() == Id).First();
+            var indexofButton=mainBufferButtons.IndexOf(buffer);
+            mainBufferButtons.RemoveAt(indexofButton);
+            buffer.SetActive(false);
         }
         else if (index == 1)
         {
-            p1BufferButtons[buttonindex].SetActive(false);
-            p1BufferButtons.RemoveAt(buttonindex);
+            var buffer = p1BufferButtons.Where(x => x.GetInstanceID() == Id).First();
+            var indexofButton=p1BufferButtons.IndexOf(buffer);
+            p1BufferButtons.RemoveAt(indexofButton);
+            buffer.SetActive(false);
         }
 
         else if (index == 2)
         {
-            p2BufferButtons[buttonindex].SetActive(false);
-            p2BufferButtons.RemoveAt(buttonindex);
+            var buffer = p2BufferButtons.Where(x => x.GetInstanceID() == Id).First();
+            var indexofButton=p2BufferButtons.IndexOf(buffer);
+            p2BufferButtons.RemoveAt(indexofButton);
+            buffer.SetActive(false);
         }
     }
 
@@ -234,4 +267,29 @@ public class UiManager : MonoBehaviour
     {
         playButtton.interactable = !playButtton.interactable;
     }
+
+    #endregion
+  
+
+  
+    
+    
+    
+    #region LevelSelection
+    private void UpdateLevelnameText(string obj)
+    {
+        MenuController.UpdateLevelnameText(obj);
+    }
+
+    public void ShowLevels()
+    {
+        MenuController.ShowLevelMenu(Dipendency.Instance.DataManger.gameData.levels);
+    }
+
+    #endregion
+}
+
+public class GameInGameUiController:MonoBehaviour
+{
+    
 }
