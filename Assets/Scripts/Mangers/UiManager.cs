@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DG.Tweening;
 using MHamidi;
 using MHamidi.Helper;
 using MHamidi.UI.UI_Messages;
@@ -10,8 +9,16 @@ using UnityEngine;
 using UnityEngine.UI;
 using Utils.Singlton;
 
-public class UiManager : MonoBehaviour
+public interface IUiManager
 {
+    public void ShowMessage(ModalWindowData data);
+
+}
+
+public class UiManager : MonoBehaviour, IUiManager
+{
+    [SerializeField]
+    private MenuController MenuController;
     public static event Action ShowModal;
     public static event Action<string, string> ShowModalString;
     public static event Action<ModalWindowData> ShowModalData;
@@ -23,13 +30,7 @@ public class UiManager : MonoBehaviour
     [Header("--------------------------------BufferParent---")] [SerializeField]
     private RectTransform BufferParrent;
 
-    [Header("--------------------------------Level SelectionPanel---")]
-    [SerializeField]
-    private RectTransform LevelSelctionParrent;
-    [SerializeField]
-    private RectTransform LevelSelctionMenu;
-    
-    
+  
     [Space(10)]
     private RectTransform mainBuffer;
     private RectTransform P1Buffer;
@@ -44,30 +45,35 @@ public class UiManager : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI playText;
 
+   
     //------------ 
     private void OnEnable()
     {
         PhysicalInputManager.QuitApplication += ShowQuitingDialogue;
         GameManger.UpdatePlayerInput += ShowPlayrInput;
         GameManger.UpdateBufferUi += ShowBufferUi;
-        GameManger.AddLevels += AddLevles;
         CommandManger.UpdatePlay += UpdatePlayButton;
         CommandManger.ChangePlayButtonInteractivityStatus += ChangePlayButtonInterActivityStatus;
         CommandManger.AddToBuffer += AddToBufferUi;
         CommandManger.RemoveAtIndexofBuffer += RemoveFromBufferUi;
+        GameManger.UpdateLevelNameText += UpdateLevelnameText;
         
     }
+
+   
 
 
     private void OnDisable()
     {
         
-        GameManger.AddLevels -= AddLevles;
         PhysicalInputManager.QuitApplication -= ShowQuitingDialogue;
+        GameManger.UpdateLevelNameText -= UpdateLevelnameText;
         GameManger.UpdatePlayerInput -= ShowPlayrInput;
+        GameManger.UpdateBufferUi-= ShowBufferUi;
         CommandManger.UpdatePlay -= UpdatePlayButton;
-        CommandManger.ChangePlayButtonInteractivityStatus -= ChangePlayButtonInterActivityStatus;
+        CommandManger.ChangePlayButtonInteractivityStatus += ChangePlayButtonInterActivityStatus;
         CommandManger.AddToBuffer -= AddToBufferUi;
+        CommandManger.RemoveAtIndexofBuffer -= RemoveFromBufferUi;
     }
 
     //-----------
@@ -79,6 +85,8 @@ public class UiManager : MonoBehaviour
     }
 
     //------------
+
+    #region ModalMessage
 
     private void ShowModalMessage()
     {
@@ -100,6 +108,11 @@ public class UiManager : MonoBehaviour
         ShowModalData?.Invoke(data);
     }
 
+
+    #endregion
+
+    #region InGameUi
+
     private void ShowPlayrInput(List<string> avilableCommand)
     {
         ClearAllChildren();
@@ -112,7 +125,7 @@ public class UiManager : MonoBehaviour
             foreach (var item in playerInputParent.GetComponentsInChildren<GameButton>())
             {
                 item.gameObject.SetActive(false);
-                item.transform.SetParent(Pool.Instance.transform, false);
+                item.transform.SetParent(Dipendency.Instance.Pool.GetGameObject().transform, false);
             }
         }
 
@@ -120,7 +133,7 @@ public class UiManager : MonoBehaviour
         {
             foreach (var item in avilableCommand)
             {
-                var buttonObject = Pool.Instance.Get("GameButton");
+                var buttonObject = Dipendency.Instance.Pool.Get("GameButton");
                 buttonObject.transform.SetParent(playerInputParent, false);
                 buttonObject.SetActive(true);
                 var command = CommandFactory.GetCommand(item);
@@ -135,13 +148,13 @@ public class UiManager : MonoBehaviour
         #endregion
     }
 
-    private void ShowBufferUi(int buffer, int p1, int p2)
+      private void ShowBufferUi(int buffer, int p1, int p2)
     {
         var ActiveBuffers = BufferParrent.GetComponentsInChildren<BufferUI>();
         foreach (var item in ActiveBuffers)
         {
             item.gameObject.SetActive(false);
-            item.transform.SetParent(Pool.Instance.transform, false);
+            item.transform.SetParent(Dipendency.Instance.Pool.GetGameObject().transform, false);
         }
 
         mainBuffer = CreatBuffer(buffer, "Main", 0);
@@ -156,7 +169,7 @@ public class UiManager : MonoBehaviour
                 return null;
             }
 
-            var bufferObject = Pool.Instance.Get("Buffer");
+            var bufferObject = Dipendency.Instance.Pool.Get("Buffer");
             bufferObject.SetActive(true);
             bufferObject.transform.SetParent(BufferParrent, false);
             var tempBuffer = bufferObject.GetComponent<BufferUI>();
@@ -171,7 +184,7 @@ public class UiManager : MonoBehaviour
     {
         if (index == 0)
         {
-            var buttonObject = Pool.Instance.Get("GameButton");
+            var buttonObject = Dipendency.Instance.Pool.Get("GameButton");
             mainBufferButtons.Add(buttonObject);
             buttonObject.transform.SetParent(mainBuffer, false);
             buttonObject.SetActive(true);
@@ -186,7 +199,7 @@ public class UiManager : MonoBehaviour
         }
         else if (index == 1)
         {
-            var buttonObject = Pool.Instance.Get("GameButton");
+            var buttonObject = Dipendency.Instance.Pool.Get("GameButton");
             p1BufferButtons.Add(buttonObject);
             buttonObject.transform.SetParent(P1Buffer, false);
             buttonObject.SetActive(true);
@@ -202,7 +215,7 @@ public class UiManager : MonoBehaviour
 
         else if (index == 2)
         {
-            var buttonObject = Pool.Instance.Get("GameButton");
+            var buttonObject = Dipendency.Instance.Pool.Get("GameButton");
             p2BufferButtons.Add(buttonObject);
             buttonObject.transform.SetParent(P2Buffer, false);
             buttonObject.SetActive(true);
@@ -255,32 +268,28 @@ public class UiManager : MonoBehaviour
         playButtton.interactable = !playButtton.interactable;
     }
 
-    public void ShowLevelMenu()
+    #endregion
+  
+
+  
+    
+    
+    
+    #region LevelSelection
+    private void UpdateLevelnameText(string obj)
     {
-        LevelSelctionMenu.gameObject.SetActive(true);
-        LevelSelctionMenu.DOMove(new Vector3(Screen.width / 2, Screen.height / 2, 0), 1f);
+        MenuController.UpdateLevelnameText(obj);
     }
 
-    private void AddLevles(List<Level> gameDataLevels)
+    public void ShowLevels()
     {
-        Util.ShowMessag($"Add Levels  and Levels Count is {gameDataLevels}");
-        
-        foreach (var item in gameDataLevels)
-        {
-            var levelButtonObject=Dipendency.Instance.Pool.Get("LevelButton");
-            levelButtonObject.SetActive(true);
-            levelButtonObject.transform.SetParent(LevelSelctionParrent,false);
-            levelButtonObject.GetComponent<LevelSelectButton>().Setup(item.number.ToString(),
-                () =>
-                {
-                    Dipendency.Instance.GameManger.StartLevel(item);
-                    LevelSelctionMenu
-                        .DOMove(new Vector3(-3 * Screen.width, Screen.height / 2, 0), 1f).OnComplete(
-                            () =>
-                            {
-                                LevelSelctionMenu.gameObject.SetActive(false);
-                            });
-                });
-        }
+        MenuController.ShowLevelMenu(Dipendency.Instance.DataManger.gameData.levels);
     }
+
+    #endregion
+}
+
+public class GameInGameUiController:MonoBehaviour
+{
+    
 }

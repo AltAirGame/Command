@@ -2,31 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
-using Mangers;
+
 using MHamidi;
 using MHamidi.Helper;
 using UnityEngine;
+using Utils.Singlton;
 
-
-public interface ILevelManger
-{
-    public GameObject Player { get; set; }
-    public Level currentLevel { get; set; }
-    public Vector3Int playerPos { get; set; }
-    public Vector3Int playerForward { get; set; }
-    void Intereact();
-    public Vector3Int GetFrontOfPlayerPosition();
-
-    public int GetFrontOfPlayerHeight();
-    public int GetPlayerCurrentHeight();
-
-    public void CreatLevel(Level level, Action<GameObject> setSubjectOfCommand);
-    public void ResetLevel();
-    public bool CheckIfGameEnded();
-    bool IsAvailable(ICommand command);
-
-    public void UpdatePlayer();
-}
 
 public class LevelManger3D : MonoBehaviour, ILevelManger
 {
@@ -45,6 +26,7 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
     private List<GameObject> Cells;
     private GameCell[,] gameCells;
     private List<GameCell> currentLevelInteractable;
+    private Vector3 playerStartPosition;
     public GameObject Player { get; set; }
     [SerializeField] private GameObject PlayerPrefab;
 
@@ -59,19 +41,7 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
         currentLevelInteractable = new List<GameCell>();
     }
 
-    private void OnEnable()
-    {
-        GameEventHandler.Rotate += Rotate;
-        GameEventHandler.IsAvailable += IsAvailable;
-       
-    }
-
-    private void OnDisable()
-    {
-        GameEventHandler.Rotate -= Rotate;
-        GameEventHandler.IsAvailable -= IsAvailable;
-        
-    }
+   
 
     #endregion
     
@@ -91,9 +61,7 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
 
     public void ResetLevel()
     {
-        Player.transform.position = new Vector3(currentLevel.startX,
-            1f + ((currentLevel.LevelLayout[currentLevel.startX, currentLevel.startY].cellHeight - 1) * .2f),
-            currentLevel.startY);
+        Player.transform.position = playerStartPosition;
         playerPos = new Vector3Int(currentLevel.startX,
             currentLevel.LevelLayout[currentLevel.startX, currentLevel.startY].cellHeight, currentLevel.startY);
         playerForward = currentLevel.direction switch
@@ -103,7 +71,7 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
             PlayerDirection.Left => new Vector3Int(1, 0, 0),
             _ => new Vector3Int(-1, 0, 0),
         };
-
+        Player.transform.rotation=Quaternion.LookRotation(new Vector3(playerForward.x,playerForward.y,playerForward.z));
         foreach (var item in currentLevelInteractable)
         {
             item.TurnOff();
@@ -120,7 +88,7 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
             {
                 if (level.LevelLayout[i, j].cellHeight > 0)
                 {
-                    var cell = Pool.Instance.Get("Cell" + level.LevelLayout[i, j].cellHeight);
+                    var cell = Dipendency.Instance.Pool.Get("Cell" + level.LevelLayout[i, j].cellHeight);
                     cell.gameObject.SetActive(true);
                     var cellType = level.LevelLayout[i, j].Type == CellType.Interactable
                         ? GameCellType.InteractableOff
@@ -140,9 +108,13 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
                             PlayerDirection.Left => new Vector3Int(1, 0, 0),
                             _ => new Vector3Int(-1, 0, 0),
                         };
-                        Player = Instantiate(PlayerPrefab, new Vector3(i, -10, j), Quaternion.identity);
+                        Player = Dipendency.Instance.Pool.Get("Player");
+                        Player.gameObject.SetActive(true);
+                        Player.transform.position = new Vector3(i, -10, j);
+                        
                         Player.transform.rotation=Quaternion.LookRotation(new Vector3(playerForward.x,playerForward.y,playerForward.z));
-                        Player.transform.DOMove(new Vector3(i, 1, j), .8f).SetEase(ease);
+                        playerStartPosition = new Vector3(i, 1 + ((level.LevelLayout[i, j].cellHeight - 1) * .4f), j);
+                        Player.transform.DOMove(playerStartPosition, .8f).SetEase(ease);
                         Cells.Add(Player);
                     }
                 }
@@ -163,7 +135,7 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
             item.transform.DOMove(item.transform.position - (item.transform.up * 10), .8f).SetEase(ease).OnComplete(
                 () =>
                 {
-                    item.transform.SetParent(Pool.Instance.gameObject.transform, false);
+                    item.transform.SetParent(Dipendency.Instance.Pool.GetGameObject().transform, false);
                     item.gameObject.SetActive(false);
                 });
             yield return new WaitForSeconds(.02f);
@@ -225,7 +197,7 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
 
     //
     //there was a Problem with multiplying Vector.Forward in the Player Rotation So I Used This f
-    private void Rotate(bool isRight)
+    public void Rotate(bool isRight)
     {
         
         Util.ShowMessag($" Rotate is Trigerd {(isRight?" Rotating Toward Right":" Rotating Toward Left")} ");
@@ -302,6 +274,6 @@ public class LevelManger3D : MonoBehaviour, ILevelManger
 
     public void UpdatePlayer()
     {
-        Player.transform.DOMove(playerPos, .2f);
+        Player.transform.DOMove(new Vector3(playerPos.x,1 + ((playerPos.y - 1) * .4f),playerPos.z), .2f);
     }
 }

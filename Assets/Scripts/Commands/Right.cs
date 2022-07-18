@@ -43,25 +43,15 @@ namespace MHamidi
             return true;
         }
 
-        public void ExecutionInstruction(ILevelManger levelManger)
-        {
-            
-        }
-
-        public bool ExecutionInstruction(GameObject subjectOfCommand, Vector3Int playerPosition, Vector3Int playerForward,
-            int playerHeight, int forwardHeight)
-        {
-
-            return true;
-        }
+       
 
         private void TurnRight(GameObject subject)
         {
-            Dipendency.Instance.GameEventHandler.OnRotate(true);
+            Dipendency.Instance.LevelManger.Rotate(true);
         }
 
         private void TurnLeft(GameObject subject)
-        {  Dipendency.Instance.GameEventHandler.OnRotate(false);
+        { Dipendency.Instance.LevelManger.Rotate(false);
         }
     }
 }

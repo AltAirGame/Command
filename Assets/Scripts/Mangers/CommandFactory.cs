@@ -24,7 +24,7 @@ public static class CommandFactory
             var tempCommand = Activator.CreateInstance(item
             ) as ICommand;
             CommandByName.Add(tempCommand.Name,item);
-            Util.ShowMessag($" we Added {tempCommand.Name} to the Factory",TextColor.Yellow);
+          
         }
 
         isInitlized = true;

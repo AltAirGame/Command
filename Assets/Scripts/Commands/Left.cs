@@ -41,11 +41,11 @@ namespace MHamidi
         private void TurnRight(GameObject subject)
         {
             
-            Dipendency.Instance.GameEventHandler.OnRotate(true);
+            Dipendency.Instance.LevelManger.Rotate(true);
         }
 
         private void TurnLeft(GameObject subject)
-        {  Dipendency.Instance.GameEventHandler.OnRotate(false);
+        { Dipendency.Instance.LevelManger.Rotate(false);
         }
     }
 }

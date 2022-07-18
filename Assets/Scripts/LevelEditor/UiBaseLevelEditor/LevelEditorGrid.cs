@@ -87,7 +87,7 @@ public class LevelEditorGrid : MonoBehaviour
         {
             for (int j = 0; j < height; j++)
             {
-                var newCell = Pool.Instance.Get("EditorCell");
+                var newCell = Dipendency.Instance.Pool.Get("EditorCell");
                 newCell.gameObject.name = $" [{i}] ,[{j}]";
                 newCell.SetActive(true);
                 newCell.transform.SetParent(transform, false);

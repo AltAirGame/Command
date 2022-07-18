@@ -1,16 +1,7 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-
-public interface ITextRename
-{
-
-    public TextMeshProUGUI text { get; set; }
-    public void RenameTOText(String name);
-
-}
 
 public class ShowNameInText : MonoBehaviour,ITextRename
 {

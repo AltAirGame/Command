@@ -6,13 +6,13 @@ using System;
 using System.Linq;
 using Utils.Singlton;
 
-public class CommandManger : MonoBehaviour
+public class CommandManger : MonoBehaviour, ICommandManger
 {
     public static event Action<Action, string> UpdatePlay;
     public static event Action ChangePlayButtonInteractivityStatus;
     public static event Action ResetPlayerPosition;
     public static event Action<int, ICommand> AddToBuffer;
-    public static event Action<int, int,int> RemoveAtIndexofBuffer;
+    public static event Action<int, int, int> RemoveAtIndexofBuffer;
 
 
     private int curentBufferIndex = 0;
@@ -31,6 +31,7 @@ public class CommandManger : MonoBehaviour
         Dipendency.Instance.LevelManger.ResetLevel();
         UpdatePlay?.Invoke(() => { Play(); }, "Play");
     }
+
     private void Awake()
     {
         current = this;
@@ -39,35 +40,39 @@ public class CommandManger : MonoBehaviour
         var commandA = new Move();
         var commandB = new Move();
     }
+
     public void SetSubjectOfCommand(GameObject subjectRefrence)
     {
         subjectOFCommand = subjectRefrence;
         ClearAllBuffers();
         SetCurrentBuffer(0);
 
-        UpdatePlay?.Invoke(() => { Play(); }, "PlayGame");
+        UpdatePlay?.Invoke(() => { Play(); }, "Play");
     }
+
     private void ClearAllBuffers()
     {
         MainCommand.Clear();
         P1Command.Clear();
         p2Command.Clear();
     }
+
     public void Play()
     {
         StartCoroutine(PlayWithDelay());
     }
+
     private IEnumerator PlayWithDelay()
     {
+        UpdatePlay?.Invoke(() => { StopPlay(); }, "Stop");
         Util.ShowMessag($" the Current MainCommand has {MainCommand.Count} item in it");
         for (int i = 0; i < MainCommand.Count; i++)
         {
-            
             yield return StartCoroutine(MainCommand[i].Execute(subjectOFCommand));
             yield return null;
         }
-       
     }
+
     public void AddToCurrentBuffer(ICommand command)
     {
         if (curentBufferIndex == 0)
@@ -95,41 +100,49 @@ public class CommandManger : MonoBehaviour
             }
         }
     }
-    public void RemoveFromBuffer(int bufferIndex, ICommand command,int instanceId)
+
+    public void RemoveFromBuffer(int bufferIndex, ICommand command, int instanceId)
     {
-         switch (bufferIndex)
-         {
-             case 0:
-             {
-                 var commandTORemove=MainCommand.Where(x => x == command).First();
-                 
-                 
-                 var index=MainCommand.IndexOf(command);
-                 RemoveAtIndexofBuffer?.Invoke(bufferIndex, index,instanceId);
-                 MainCommand.Remove(command);
-                 break;
-             }
-             case 1:
-             {
-                 var index=P1Command.IndexOf(command);
-                 RemoveAtIndexofBuffer?.Invoke(bufferIndex, index,instanceId);
-                 P1Command.Remove(command);
-                 break;
-             }
-             case 2:
-             {
-                 var index=p2Command.IndexOf(command);
-                 RemoveAtIndexofBuffer?.Invoke(bufferIndex, index,instanceId);
-                 p2Command.Remove(command);
-                 break;
-             }
-         }
+        switch (bufferIndex)
+        {
+            case 0:
+            {
+                if (MainCommand.Count == 0)
+                    return;
+                var commandTORemove = MainCommand.Where(x => x == command).First();
+
+
+                var index = MainCommand.IndexOf(command);
+                RemoveAtIndexofBuffer?.Invoke(bufferIndex, index, instanceId);
+                MainCommand.Remove(command);
+
+
+                break;
+            }
+            case 1:
+            {  if (P1Command.Count == 0)
+                    return;
+                var index = P1Command.IndexOf(command);
+                RemoveAtIndexofBuffer?.Invoke(bufferIndex, index, instanceId);
+                P1Command.Remove(command);
+                break;
+            }
+            case 2:
+            {  if (p2Command.Count == 0)
+                    return;
+                var index = p2Command.IndexOf(command);
+                RemoveAtIndexofBuffer?.Invoke(bufferIndex, index, instanceId);
+                p2Command.Remove(command);
+                break;
+            }
+        }
     }
+
     private void ChangeBuffer(int index)
     {
         curentBufferIndex = index;
-        
     }
+
     public void SetCurrentBuffer(int index)
     {
         ChangeBuffer(index);

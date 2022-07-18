@@ -42,7 +42,7 @@ public class BufferUI : MonoBehaviour
         {
             
             item.gameObject.SetActive(false);
-            item.transform.SetParent(Dipendency.Instance.Pool.transform,false);
+            item.transform.SetParent(Dipendency.Instance.Pool.GetGameObject().transform,false);
         }
     }
 

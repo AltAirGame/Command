@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections;
-using Mangers;
+
 using MHamidi;
 using MHamidi.Helper;
 using UnityEngine;
@@ -14,16 +14,25 @@ namespace Utils.Singlton
         public float y = 0;
         public float z = 0;
 
-        private UiManager _uiManager;
 
-        public UiManager UiManager
+
+        private IPhysicalInputManager _input;
+        public IPhysicalInputManager InputManager {
+            get
+            {
+                return _input;
+            }
+        }
+        private IUiManager _uiManager;
+
+        public IUiManager UiManager
         {
             get { return _uiManager; }
         }
 
-        private Pool _pool;
+        private IPool _pool;
 
-        public Pool Pool
+        public IPool Pool
         {
             get{
                 return _pool;
@@ -39,16 +48,16 @@ namespace Utils.Singlton
                 return _dataManger;
             }
         }
-        private GameManger _gameManger;
+        private IGameManger _gameManger;
 
-        public GameManger GameManger
+        public IGameManger GameManger
         {
             get { return _gameManger; }
         }
 
-         private CommandManger _commandManger;
+         private ICommandManger _commandManger;
 
-        public CommandManger ComandManger
+        public ICommandManger ComandManger
         {
             get { return _commandManger; }
         }
@@ -60,15 +69,9 @@ namespace Utils.Singlton
             get { return _levelManger; }
         }
 
-        private GameEventHandler _gameEventHandler;
+     
 
-        public GameEventHandler GameEventHandler
-        {
-            get
-            {
-                return _gameEventHandler;
-            }
-        }
+       
         public static Dipendency Instance;
 
         private Camera _camera;
@@ -86,13 +89,13 @@ namespace Utils.Singlton
 
         private void Awake()
         {
-            _gameEventHandler = GetComponent<GameEventHandler>();
-            _dataManger = GetComponent<DataManger>();
-            _gameManger = GetComponent<GameManger>();
-            _commandManger = GetComponent<CommandManger>();
+            _input = GetComponent<IPhysicalInputManager>();
+            _dataManger = GetComponent<IData>();
+            _gameManger = GetComponent<IGameManger>();
+            _commandManger = GetComponent<ICommandManger>();
             _levelManger = GetComponent<ILevelManger>();
-            _pool = GetComponent<Pool>();
-            _uiManager = GetComponent<UiManager>();
+            _pool = GetComponent<IPool>();
+            _uiManager = GetComponent<IUiManager>();
             _dataManger = GetComponent<IData>();
             Instance = this;
         }

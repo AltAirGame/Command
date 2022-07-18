@@ -26,7 +26,7 @@ namespace MHamidi
             SubjectOfCommands = subject;
             Util.ShowMessag($" Jump");
             yield return Dipendency.Instance.StartCoroutine(JumpForward(subject));
-            subject.GetComponentInChildren<IPlayerAnimation>().Jump();
+         
             yield return null;
         }
 
@@ -77,7 +77,7 @@ namespace MHamidi
             var available = Dipendency.Instance.LevelManger.IsAvailable(
                 this);
             if (available)
-            {
+            { 
                 var levelManger = Dipendency.Instance.LevelManger;
                 var jumpHeight = levelManger.GetFrontOfPlayerHeight() - levelManger.GetPlayerCurrentHeight();
                 var start = levelManger.playerPos;
@@ -87,7 +87,7 @@ namespace MHamidi
                 var end = levelManger.playerPos;
 
                 yield return Dipendency.Instance.StartCoroutine(JumpForwardAction(start,end));
-                subject.GetComponentInChildren<IPlayerAnimation>().Jump();
+               
                 yield return Util.GetWaitForSeconds(.2f);
             }
             else
@@ -122,38 +122,18 @@ namespace MHamidi
         }
 
     
-        //there is A Bug Here 
+        
         public IEnumerator JumpForwardAction(Vector3 start,Vector3 end)
         {
 
             yield return Util.GetWaitForSeconds(.5f);
             Util.ShowMessag($"[{this.GetType().Name}] Happened",TextColor.Yellow);
             float timeFrame = 0;
-            var position0 = new Vector3(start.x, start.y+(start.y-1*.4f), start.z);
-            var position1 = new Vector3(start.x, start.y*.4f+1, start.z);
-            var position2 = new Vector3(end.x, end.y*.4f, end.z);
-            var position3 = new Vector3(end.x, (end.y-1*.4f), end.z);
-            // Vector3 p1 = new Vector3(p0.x, p0.y + 1, p0.z);
-            // Vector3 p2 = new Vector3(p0.x + 1, p0.y + 1, p0.z);
-            // Vector3 p3 = p0;
-            //
-            // switch (target)
-            // {
-            //     case 0:
-            //         p2 = p1;
-            //         p3 = p0;
-            //         break;
-            //     case 1:
-            //
-            //         p3 = (new Vector3(p0.x, p0.y + .4f, p0.z) + (SubjectOfCommands.transform.forward));
-            //         Util.ShowMessag($"JUMP-UP");
-            //         break;
-            //     case -1:
-            //         p3 = (new Vector3(p0.x, p0.y - .4f, p0.z) + (SubjectOfCommands.transform.forward));
-            //         Util.ShowMessag($"JUMP-DOWN");
-            //         break;
-            // }
-            //
+            var position0 = new Vector3(start.x,1+((start.y-1)*.4f), start.z);
+            var position1 = new Vector3(start.x, start.y+2, start.z);
+            var position2 = new Vector3(end.x, end.y+2, end.z);
+            var position3 = new Vector3(end.x, (1+(end.y-1)*.4f), end.z);
+        
             SubjectOfCommands = Dipendency.Instance.LevelManger.Player;
             while (Vector3.Distance(SubjectOfCommands.transform.position, position3) > 0)
             {
@@ -169,6 +149,7 @@ namespace MHamidi
             }
             SubjectOfCommands.transform.position = position3;
             Util.ShowMessag($"jump Ended");
+         
         }
 
        

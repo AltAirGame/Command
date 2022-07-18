@@ -19,7 +19,7 @@ public class PlayerAnimation : MonoBehaviour, IPlayerAnimation
 
     public void Jump()
         {
-            transform.DOScale(new Vector3(1, .5f, 1), .2f).OnComplete(() => { transform.DOScale(Vector3.one, 0.3f); });
+            transform.DOScale(new Vector3(1, .5f, 1), .1f).OnComplete(() => { transform.DOScale(Vector3.one, 0.1f); });
         }
 
         public void InterAct()

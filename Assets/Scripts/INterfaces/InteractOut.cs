@@ -9,9 +9,9 @@ public class InteractOut : MonoBehaviour,IInteractable
 {
 
 
-    public UnityEvent interaction;
-    public UnityEvent interactionTwo;
-    public UnityEvent interactionThree;
+    public UnityEvent Click;
+    public UnityEvent HoldDown;
+    public UnityEvent OnPointerEnter;
     
     public GameObject Interactable;
     private IInteractable _interactable;
@@ -26,16 +26,16 @@ public class InteractOut : MonoBehaviour,IInteractable
 
     public void Interact()
     {
-        interaction?.Invoke();
+        Click?.Invoke();
     }
 
     public void InteractionTwo()
     {
-     interactionTwo?.Invoke();
+     HoldDown?.Invoke();
     }
 
     public void InteractionThree()
     {
-        interactionThree?.Invoke();
+        OnPointerEnter?.Invoke();
     }
 }

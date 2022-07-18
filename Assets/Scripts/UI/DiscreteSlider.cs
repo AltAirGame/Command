@@ -34,7 +34,7 @@ public class DiscreteSlider : MonoBehaviour
     public void IncreaseValue()
     {
 
-        if (CurrentValue<maxValue)
+        if (CurrentValue<=maxValue)
         {
             CurrentValue++;
         }

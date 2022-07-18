@@ -35,21 +35,7 @@ namespace MHamidi
             return true;
         }
 
-        public void ExecutionInstruction(ILevelManger levelManger)
-        {
-            
-        }
-
-       
-
-        public void Execute()
-        {
-           
-        }
-
-        public void Undo()
-        {
-            
-        }
+      
+      
     }
 }

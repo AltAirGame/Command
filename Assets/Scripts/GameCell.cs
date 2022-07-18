@@ -6,11 +6,6 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 
-public interface IGameCellAnimation
-{
-    public void Interact();
-}
-
 public enum GameCellType
 {
     Simple,InteractableOff,InteractableOn

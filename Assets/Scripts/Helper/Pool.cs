@@ -15,23 +15,13 @@ namespace MHamidi.Helper
         
         
         }
-        public class Pool : MonoBehaviour
+
+        public class Pool : MonoBehaviour, IPool
         {
             public List<PoolItem> items;
             public List<GameObject> PooledItems;
-            public static Pool Instance;
             private void Awake()
             {
-                PooledItems = new List<GameObject>();
-                if (Instance==null)
-                {
-                    Instance = this;
-                  
-                }
-                else
-                {
-                    Destroy(gameObject);
-                }
                 PopulateThePool();
             }
             public GameObject Get(string Id)
@@ -65,6 +55,11 @@ namespace MHamidi.Helper
 
 
                 return null;
+            }
+
+            public GameObject GetGameObject()
+            {
+                return this.gameObject;
             }
 
             private void Start()
