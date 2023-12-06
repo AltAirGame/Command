@@ -1,26 +1,32 @@
-﻿using MHamidi;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 
-public class CellLayout
+namespace GameSystems.Core
 {
-    public CellType Type;
-    public int cellHeight;
+    
+    [System.Serializable]
+    public class CellLayout
+    {   
+        public bool IsStart { get; set; }
+        public CellType Type;
+        public int cellHeight;
 
-    public CellLayout()
-    {
-        
-    }
+        public CellLayout()
+        {
+        }
 
-    public CellLayout(JToken token)
-    {
-        this.cellHeight=Util.NullabelCaster.CastInt(token["cellHeight"]);
-        var castedType = Util.NullabelCaster.CastInt(token["Type"]);
-        Type = (CellType)castedType;
-    }
+        public CellLayout(JToken token)
+        {
+            this.cellHeight = Util.NullableCaster.CastInt(token["cellHeight"]);
+            var castedType = Util.NullableCaster.CastInt(token["Type"]);
+            Type = (CellType) castedType;
+        }
 
-    public CellLayout(int heigt, CellType type)
-    {
-        this.cellHeight = heigt;
-        this.Type = type;
+        public CellLayout(int heigt, CellType type)
+        {
+            this.cellHeight = heigt;
+            this.Type = type;
+        }
+
+   
     }
 }

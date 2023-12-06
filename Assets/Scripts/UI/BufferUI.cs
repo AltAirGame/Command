@@ -1,54 +1,58 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Utils.Singlton;
 
-public class BufferUI : MonoBehaviour
+namespace GameSystems.Core
 {
-    [SerializeField] private TextMeshProUGUI textmeshPro;
-
-    [SerializeField] private RectTransform Buffer;
-
-    [SerializeField] private Button Button;
-
-
-    public void SetText(string text)
+    public class BufferUI : MonoBehaviour
     {
-        textmeshPro.text = text;
-    }
+        [SerializeField] private TextMeshProUGUI textmeshPro;
 
-    public void SetSize(int size)
-    {
-        Clear();
-        int SizeOfBuffer;
-        if (size > 4)
+        [SerializeField] private RectTransform Buffer;
+
+        [SerializeField] private Button Button;
+        private IPoolService pool;
+
+        private void Start()
         {
-            SizeOfBuffer = Mathf.RoundToInt(size / 4) * 100;
+            pool = ServiceLocator.Instance.GetService<IPoolService>();
         }
-        else
-        {
-            SizeOfBuffer = 100;
-        }
-        Buffer.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, SizeOfBuffer);
-       
-    }
 
-    public void Clear()
-    {
-        foreach (var item in transform.GetComponentsInChildren<GameButton>())
+        public void SetText(string text)
         {
-            
-            item.gameObject.SetActive(false);
-            item.transform.SetParent(Dipendency.Instance.Pool.GetGameObject().transform,false);
+            textmeshPro.text = text;
         }
-    }
 
-    public void SetOnClick(Action onCLick)
-    {
-        Button.onClick.RemoveAllListeners();
-        Button.onClick.AddListener(() => { onCLick?.Invoke(); });
+        public void SetSize(int size)
+        {
+            Clear();
+            int SizeOfBuffer;
+            if (size > 4)
+            {
+                SizeOfBuffer = Mathf.RoundToInt(size / 4) * 100;
+            }
+            else
+            {
+                SizeOfBuffer = 100;
+            }
+
+            Buffer.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, SizeOfBuffer);
+        }
+
+        public void Clear()
+        {
+            foreach (var item in transform.GetComponentsInChildren<GameButton>())
+            {
+                item.gameObject.SetActive(false);
+                item.transform.SetParent(pool.GetGameObject().transform, false);
+            }
+        }
+
+        public void SetOnClick(Action onCLick)
+        {
+            Button.onClick.RemoveAllListeners();
+            Button.onClick.AddListener(() => { onCLick?.Invoke(); });
+        }
     }
 }

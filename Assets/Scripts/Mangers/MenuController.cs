@@ -1,93 +1,112 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DG.Tweening;
-using MHamidi;
+
+
 using TMPro;
 using UnityEngine;
-using Utils.Singlton;
 
-public class MenuController:MonoBehaviour 
+namespace GameSystems.Core
 {
-    
-    [Header("--------------------------------Level SelectionPanel---")]
-    [SerializeField]
-    private RectTransform LevelSelctionParrent;
-    
-    
-    [SerializeField]
-    private RectTransform RaycastBlocker;
-    [SerializeField]
-    private RectTransform LevelSelctionMenu;
-    
-    [Header("--------------------------------Level Name---")] [SerializeField]
-    private TextMeshProUGUI CurrentLevelName;
-    
-    
-    
-    
-    
-    
-    public void ShowLevelMenu(List<Level>levels)
+    public class MenuController : MonoBehaviour
     {
-        
-        Util.ShowMessag($"Show Level menu",TextColor.Yellow);
-        RaycastBlocker.gameObject.SetActive(true);
-        AddLevelIcons(levels);
-        UpdateLevelnameText(string.Empty);
-    }
 
-    public void UpdateLevelnameText(string name)
-    {
-        CurrentLevelName.text = name;
-    }
+        [Header("--------------------------------Level SelectionPanel---")] [SerializeField]
+        private RectTransform LevelSelctionParrent;
 
-    private void ClearLevelIcons()
-    {
-        foreach (var item in LevelSelctionParrent.GetComponentsInChildren<LevelSelectButton>())
+
+        [SerializeField] private RectTransform RaycastBlocker;
+        [SerializeField] private RectTransform LevelSelctionMenu;
+
+        [Header("--------------------------------Level Name---")] [SerializeField]
+        private TextMeshProUGUI CurrentLevelName;
+
+
+        private IPoolService poolService;
+        private IGameManger gameManger;
+        private IAssetLoaderService assetLoaderService;
+
+        private void Start()
         {
-            item.transform.SetParent(Dipendency.Instance.Pool.GetGameObject().transform,false);
-            item.gameObject.SetActive(false);
+            poolService = ServiceLocator.Instance.GetService<IPoolService>();
+            gameManger = ServiceLocator.Instance.GetService<IGameManger>();
+            assetLoaderService = ServiceLocator.Instance.GetService<IAssetLoaderService>();
         }
-    }
 
-    private void AddLevelIcons(List<Level> gameDataLevels)
-    {
-        Util.ShowMessag($"Add Levels  and Levels Count is {gameDataLevels}");
-        
-        foreach (var item in gameDataLevels)
+        public void ShowLevelMenu(List<Level> levels)
         {
-            //Just for Simplify
-            var passed = true;
-            var icon = Resources.Load<Sprite>(passed?"Unlocked":"Lock");
-            var number = item.number + 1;
-            
-            var levelButtonObject=Dipendency.Instance.Pool.Get("LevelButton");
-            levelButtonObject.SetActive(true);
-            levelButtonObject.transform.SetParent(LevelSelctionParrent,false);
-            levelButtonObject.GetComponent<LevelSelectButton>().Setup(new LevelSelectButtonData(number,passed,icon,
-                () =>
+
+            // Util.ShowMessage($"Show Level menu",TextColor.Yellow);
+            RaycastBlocker.gameObject.SetActive(true);
+            Debug.Log($"Level count is{levels.Count}");
+            AddLevelIcons(levels);
+            UpdateLevelnameText(string.Empty);
+        }
+
+        public void UpdateLevelnameText(string name)
+        {
+            CurrentLevelName.text = name;
+        }
+
+        private void ClearLevelIcons()
+        {
+            foreach (var item in LevelSelctionParrent.GetComponentsInChildren<LevelSelectButton>())
+            {
+                item.transform.SetParent(poolService.GetGameObject().transform, false);
+                item.gameObject.SetActive(false);
+            }
+        }
+
+        private void AddLevelIcons(List<Level> gameDataLevels)
+        {
+
+
+            foreach (var item in gameDataLevels)
+            {
+                Debug.Log($"we have {gameDataLevels.Count} levels");
+                //Just for Simplify
+                var passed = true;
+
+                var number = item.number + 1;
+
+                var levelButtonObject = poolService.Get("LevelButton");
+                levelButtonObject.SetActive(true);
+                levelButtonObject.transform.SetParent(LevelSelctionParrent, false);
+                var icon = Resources.Load<Sprite>(passed ? "Unlocked" : "Lock");
+                assetLoaderService.LoadAddressableAsset<Sprite>($"icons/{(passed ? "Unlocked" : "Lock")}", (icon) =>
                 {
-                    Dipendency.Instance.GameManger.StartLevel(item);
-                    Hide();
-                    
-                }));
+                    levelButtonObject.GetComponent<LevelSelectButton>().Setup(new LevelSelectButtonData(number, passed,
+                        icon,
+                        () =>
+                        {
+                            gameManger.StartLevel(item);
+                            Hide();
+
+                        }));
+                });
+
+            }
+
+            Show();
         }
-        Show();
+
+        private void Show()
+        {
+            LevelSelctionMenu.transform.position = new Vector3(Screen.width * 4, Screen.height / 2, 0);
+            LevelSelctionMenu.gameObject.SetActive(true);
+            LevelSelctionMenu.DOMove(new Vector3(Screen.width / 2, Screen.height / 2, 0), .5f).SetEase(Ease.InOutQuint);
+        }
+
+        private void Hide()
+        {
+
+            LevelSelctionMenu.transform.DOMove(new Vector3(Screen.width * 2, Screen.height / 2, 0), .5f)
+                .SetEase(Ease.InOutQuint).OnComplete(() =>
+                {
+                    ClearLevelIcons();
+                    RaycastBlocker.gameObject.SetActive(false);
+                });
+        }
+
     }
-
-    private void Show()
-    {
-        LevelSelctionMenu.transform.position =new Vector3(Screen.width * 4, Screen.height / 2, 0);
-        LevelSelctionMenu.gameObject.SetActive(true);
-        LevelSelctionMenu.DOMove(new Vector3(Screen.width / 2, Screen.height / 2, 0), .5f).SetEase(Ease.InOutQuint);
-    }
-
-    private void Hide()
-    {
-       
-        LevelSelctionMenu.transform.DOMove(new Vector3(Screen.width * 2, Screen.height / 2, 0), .5f).SetEase(Ease.InOutQuint).OnComplete(() =>
-        {   ClearLevelIcons();
-            RaycastBlocker.gameObject.SetActive(false);
-        });
-}
-
 }

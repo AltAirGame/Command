@@ -1,30 +1,30 @@
-
-using System;
 using System.Collections;
-using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-namespace MHamidi
+
+namespace GameSystems.Core
 {
-    public class OnPointerEnterAction : MonoBehaviour,IPointerClickHandler,IPointerDownHandler,IPointerUpHandler
+    public class OnPointerEnterAction : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler
     {
-        [SerializeField]
-        Image DisplayBar;
-        private float holdThreashold=2f;
-        private float time=0;
+        [SerializeField] Image DisplayBar;
+        private float holdThreashold = 2f;
+        private float time = 0;
         public IInteractable interactable;
         private bool TimerisOn;
+
         private void Start()
         {
             interactable = GetComponent<IInteractable>();
         }
+
         public void OnPointerClick(PointerEventData eventData)
         {
-            if (interactable is null||time>.5f)
+            if (interactable is null || time > .5f)
             {
                 return;
             }
+
             interactable.Interact();
         }
 
@@ -34,9 +34,10 @@ namespace MHamidi
             {
                 return;
             }
+
             TimerisOn = true;
-           StopCoroutine(Timer());
-           StartCoroutine(Timer());
+            StopCoroutine(Timer());
+            StartCoroutine(Timer());
         }
 
         public void OnPointerUp(PointerEventData eventData)
@@ -45,23 +46,23 @@ namespace MHamidi
         }
 
         IEnumerator Timer()
-        { 
+        {
             time = 0f;
             while (TimerisOn)
             {
                 time += Time.deltaTime;
                 if (DisplayBar is not null)
                 {
-                    if (time>.2f)
+                    if (time > .2f)
                     {
-                        DisplayBar.fillAmount=time / holdThreashold;
+                        DisplayBar.fillAmount = time / holdThreashold;
                     }
-                   
                 }
+
                 yield return null;
             }
 
-            if (time>holdThreashold)
+            if (time > holdThreashold)
             {
                 interactable.InteractionTwo();
             }
@@ -69,13 +70,9 @@ namespace MHamidi
             while (time > 0)
             {
                 time -= Time.deltaTime * 2.5f;
-                DisplayBar.fillAmount=time / holdThreashold;
+                DisplayBar.fillAmount = time / holdThreashold;
                 yield return null;
             }
-
-            
-
-
         }
     }
 }

@@ -4,24 +4,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LevelEditorToggle : MonoBehaviour
+namespace GameSystems.Core
 {
-   [SerializeField]
-   private Toggle _toggle;
-   public string Name;
-   public Toggle toggle
+   public class LevelEditorToggle : MonoBehaviour
    {
-      get { return _toggle; }
-   }
+      [SerializeField] private Toggle _toggle;
+      public string Name;
 
-   private void Start()
-   {
-      _toggle = GetComponent<Toggle>();
-   }
+      public Toggle toggle
+      {
+         get { return _toggle; }
+      }
 
-   public void SetNameOfToggle(string itemName)
-   {
-      Name = itemName;
-      GetComponent<ITextRename>().RenameTOText(itemName);
+      private void Start()
+      {
+         _toggle = GetComponent<Toggle>();
+      }
+
+      public void SetNameOfToggle(string itemName)
+      {
+         Name = itemName;
+         GetComponent<ITextRename>().RenameTOText(itemName);
+      }
    }
 }

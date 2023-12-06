@@ -1,63 +1,64 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using MHamidi;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class DiscreteSlider : MonoBehaviour
+
+namespace GameSystems.Core
 {
-    public int CurrentValue=0;
-    public int maxValue=8;
-    public int minValue=0;
-    public Image fill;
-
-    public void SetCurrentValue(int value)
+    public class DiscreteSlider : MonoBehaviour
     {
-        if (value>maxValue || value < minValue)
+        public int CurrentValue = 0;
+        public int maxValue = 8;
+        public int minValue = 0;
+        public Image fill;
+
+        public void SetCurrentValue(int value)
         {
-            return;
+            if (value > maxValue || value < minValue)
+            {
+                return;
+            }
+
+            CurrentValue = value;
+            UpdateView();
         }
 
-        CurrentValue = value;
-        UpdateView();
-    }
-
-    private void Start()
-    {
-        CurrentValue = minValue;
-        UpdateView();
-        
-    }
-
-    public void IncreaseValue()
-    {
-
-        if (CurrentValue<=maxValue)
+        private void Start()
         {
-            CurrentValue++;
-        }
-        UpdateView();
-        
-    }
+            CurrentValue = minValue;
+            UpdateView();
 
-    public void DecreaseValue()
-    {
-        if (CurrentValue>minValue)
+        }
+
+        public void IncreaseValue()
         {
-            CurrentValue--;
+
+            if (CurrentValue <= maxValue)
+            {
+                CurrentValue++;
+            }
+
+            UpdateView();
+
         }
-        UpdateView();
+
+        public void DecreaseValue()
+        {
+            if (CurrentValue > minValue)
+            {
+                CurrentValue--;
+            }
+
+            UpdateView();
+        }
+
+        private void UpdateView()
+        {
+            var fillSize = fill.rectTransform.rect.width;
+
+            var percentage = fillSize / 12;
+            fill.fillAmount = CurrentValue * percentage * .002f;
+        }
+
+
     }
-
-    private void UpdateView()
-    {
-        var fillSize=fill.rectTransform.rect.width;
-
-        var percentage = fillSize / 12;
-        fill.fillAmount =CurrentValue *percentage*.002f;
-    }
-
-
 }

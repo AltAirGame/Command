@@ -4,20 +4,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameButton : MonoBehaviour
+
+namespace GameSystems.Core
 {
-  [SerializeField] private Image Icon;
-  [SerializeField] private Button Button;
-  
-  public void SetIcon(Sprite icon)
+  public class GameButton : MonoBehaviour
   {
-    this.Icon.sprite = icon;
+    [SerializeField] private Image Icon;
+    [SerializeField] private Button Button;
 
-  }
+    public void SetIcon(Sprite icon)
+    {
+      this.Icon.sprite = icon;
 
-  public void SetListener(Action onClick)
-  {
-    this.Button.onClick.RemoveAllListeners();
-    Button.onClick.AddListener(() => { onClick?.Invoke();});
+    }
+
+    public void SetListener(Action onClick)
+    {
+      this.Button.onClick.RemoveAllListeners();
+      Button.onClick.AddListener(() => { onClick?.Invoke(); });
+    }
   }
 }

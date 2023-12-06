@@ -3,43 +3,59 @@ using UnityEngine.UI;
 using UnityEngine;
 
 
-public class ChangeColor : MonoBehaviour
+namespace GameSystems.Core
 {
-
-    public Color defaultColor;
-
-    public Color inteactedColor;
-
-    public Image image;
-
-    public bool on = false;
-    // Start is called before the first frame update
-    void Start()
-    {
-        image.color = defaultColor;
-    }
-
-    public void TurnOn()
-    {
-        on = true;
-        UpdateColor();
-    }
-
-    public void TurnOff()
-    {
-        @on = false;
-        UpdateColor();
-    }
-
-    public void changeValue()
+    public class ChangeColor : MonoBehaviour
     {
 
-        on = !@on;
-        UpdateColor();
-    }
+        public Color defaultColor;
 
-    private void UpdateColor()
-    {
-        image.color = on? inteactedColor:defaultColor;
+        public Color inteactedColor;
+
+        public Image image;
+
+        public bool on = false;
+
+        // Start is called before the first frame update
+        void Start()
+        {
+            image.color = defaultColor;
+        }
+
+        public void TurnOn()
+        {
+            on = true;
+            UpdateColor();
+        }
+
+        public void TurnOff()
+        {
+            @on = false;
+            UpdateColor();
+        }
+
+        public void changeValue()
+        {
+
+            on = !@on;
+            UpdateColor();
+        }
+
+        private void UpdateColor()
+        {
+            image.color = on ? inteactedColor : defaultColor;
+        }
+
+        public void SetState(bool state)
+        {
+            if (state)
+            {
+                TurnOn();
+            }
+            else
+            {
+                TurnOff();
+            }
+        }
     }
 }

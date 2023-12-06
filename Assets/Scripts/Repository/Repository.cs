@@ -1,103 +1,87 @@
-using System;
-using Helper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
-
-namespace MHamidi
+namespace GameSystems.Core
 {
-    public class Repository : MonoBehaviour
+    public class Repository : MonoBehaviour, IRepository
     {
+        private const string PlayerDataName = "Player.txt";
+        private const string GameDataName = "Game.txt";
 
-        public static Repository current;
 
-        private void Awake()
+        [SerializeField] private IResourcesService resourcesService;
+
+        private void Start()
         {
-            current = this;
+            InitializeServices();
         }
 
-        [SerializeField] private IResources _resources;
-
-        private void OnEnable()
+        public void InitializeServices()
         {
-            _resources = GetComponent<IResources>();
-        }
 
-        public RepositoryResponse<GameData> LoadGameData(string saveDestination)
-        {
-            var levelCollectionResponse = new RepositoryResponse<GameData>();
-            _resources ??= GetComponent<IResources>();
 
-            var response = _resources.Load(saveDestination);
-            if (response.isSuccess)
+            resourcesService = ServiceLocator.Instance.GetService<IResourcesService>();
+            if (resourcesService == null)
             {
-                var jObject=JObject.Parse(response.body);
-                
-                levelCollectionResponse.data = new GameData(jObject);//Leveldata->Level
-                levelCollectionResponse.error = new Error();
+                Debug.LogError("ResourcesService component is not attached to Repository.");
+            }
+        }
+
+        public RepositoryResponse<LevelData> LoadGameData(string gameDataFilename)
+        {
+            return LoadData<LevelData>(GameDataName);
+        }
+
+        public RepositoryResponse<PlayerData> LoadPlayerData(string playerDataFilename)
+        {
+            return LoadData<PlayerData>(PlayerDataName);
+        }
+
+        public RepositoryResponse<LevelData> SaveGameData(string gameDataFilename, LevelData gameData)
+        {
+            return SaveData(gameDataFilename, gameData);
+        }
+
+        public RepositoryResponse<PlayerData> SavePlayerData(string playerDataFilename, PlayerData playerData)
+        {
+            return SaveData(playerDataFilename, playerData);
+        }
+
+        public RepositoryResponse<T> LoadData<T>(string saveDestination) where T : new()
+        {
+            var response = new RepositoryResponse<T>();
+            var loadResponse = resourcesService.Load($"{saveDestination}");
+
+            if (loadResponse.isSuccess)
+            {
+                response.data = JsonConvert.DeserializeObject<T>(loadResponse.body);
+                response.error = new Error();
             }
             else
             {
-                levelCollectionResponse.error = new Error(response.code, response.message);
+                response.error = new Error(loadResponse.code, loadResponse.message);
             }
 
-            return levelCollectionResponse;
+            return response;
         }
-        public RepositoryResponse<PlayerData> LoadPlayerData(string saveDestination)
+
+        public RepositoryResponse<T> SaveData<T>(string saveDestination, T data)
         {
-            var levelCollectionResponse = new RepositoryResponse<PlayerData>();
-            _resources ??= GetComponent<IResources>();
-            var response = _resources.Load(saveDestination);
-            if (response.isSuccess)
+            var response = new RepositoryResponse<T>();
+            var saveSubject = JsonConvert.SerializeObject(data);
+            var saveResponse = resourcesService.Save($"{saveDestination}", saveSubject);
+
+            if (saveResponse.isSuccess)
             {
-                levelCollectionResponse.data = new PlayerData(JObject.Parse(response.body));
-                levelCollectionResponse.error = new Error();
-                
+                response.data = data;
             }
             else
             {
-                levelCollectionResponse.error = new Error(response.code, response.message);
+                response.error = new Error(saveResponse.code, saveResponse.message);
             }
 
-            return levelCollectionResponse;
-        }
-        
-        // There is A Problem Here
-        // I Must Choose between Making 2 Model for the Level  Collection or Serialize my Level Manually  
-        public RepositoryResponse<GameData> SaveGameData(string saveDestination,GameData gameData)
-        {
-            var _response = new RepositoryResponse<GameData>();
-            var saveSubject=JsonConvert.SerializeObject(gameData);//Level ->Level Data
-            var response = _resources.Save(saveDestination,saveSubject);
-            if (response.isSuccess)
-            {
-                _response.data = gameData;
-                
-            }
-            else
-            {
-                
-                _response.error = new Error(response.code,response.message); 
-                
-                
-            }
-            return _response;
-        }
-        public RepositoryResponse<PlayerData> SavePlayerData(string saveDestination,PlayerData playerData)
-        {
-            var _response = new RepositoryResponse<PlayerData>();
-            var saveSubject=JsonConvert.SerializeObject(playerData);
-            var response = _resources.Save(saveDestination,saveSubject);
-            if (response.isSuccess)
-            {
-                _response.data = playerData;
-            }
-            else
-            {
-                _response.error = new Error(response.code, response.message);
-            }
-            return _response;
+            return response;
         }
     }
 }

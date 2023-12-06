@@ -1,4 +1,4 @@
-namespace MHamidi
+namespace GameSystems.Core
 {
     public class Error
     {

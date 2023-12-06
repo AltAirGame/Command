@@ -1,53 +1,52 @@
-﻿using DG.Tweening;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-public class MenuSelectButton:MonoBehaviour,IPointerEnterHandler,IPointerClickHandler,IPointerExitHandler,IPointerUpHandler
-{   
-    [SerializeField]
-    private float TimeSinceLastInteraction=0;
-    [SerializeField] private float timeTOGetIdel;
-
-    public UnityEvent OnPointerEnterEvent;
-    public UnityEvent OnPointerExitEvent;
-    public UnityEvent OnClickEvent;
-
-    private void Update()
+namespace GameSystems.Core
+{
+    public class MenuSelectButton : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler, IPointerExitHandler,
+        IPointerUpHandler
     {
-        TimeSinceLastInteraction += Time.deltaTime;
-        if (TimeSinceLastInteraction>timeTOGetIdel)
+        [SerializeField] private float TimeSinceLastInteraction = 0;
+        [SerializeField] private float timeTOGetIdel;
+
+        public UnityEvent OnPointerEnterEvent;
+        public UnityEvent OnPointerExitEvent;
+        public UnityEvent OnClickEvent;
+
+        private void Update()
         {
-            GetComponent<IButtonAnimation>().Idle();
+            TimeSinceLastInteraction += Time.deltaTime;
+            if (TimeSinceLastInteraction > timeTOGetIdel)
+            {
+                GetComponent<IButtonAnimation>().Idle();
+                TimeSinceLastInteraction = 0;
+            }
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
             TimeSinceLastInteraction = 0;
         }
-    }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        TimeSinceLastInteraction = 0;
-    }
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            OnClickEvent?.Invoke();
+            GetComponent<IButtonAnimation>().OnClick();
+            TimeSinceLastInteraction = 0;
+        }
 
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        
-        OnClickEvent?.Invoke();
-        GetComponent<IButtonAnimation>().OnClick();
-        TimeSinceLastInteraction=0;
-    }
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            OnPointerExitEvent?.Invoke();
+            GetComponent<IButtonAnimation>().OnPointerExit();
+            TimeSinceLastInteraction = 0;
+        }
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-       
-        OnPointerExitEvent?.Invoke();
-        GetComponent<IButtonAnimation>().OnPointerExit();
-        TimeSinceLastInteraction=0;
-    }
-
-    public void OnPointerUp(PointerEventData eventData)
-    {
-       
-        GetComponent<IButtonAnimation>().OnPointerUp();
-        TimeSinceLastInteraction=0;
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            GetComponent<IButtonAnimation>().OnPointerUp();
+            TimeSinceLastInteraction = 0;
+        }
     }
 }
