@@ -31,12 +31,10 @@ namespace GameSystems.Core
 
         public PlayerData(string responseBody)
         {
-
         }
 
         public PlayerData(JObject jObject)
         {
-
             characterSkin = Util.NullableCaster.CastInt(jObject["characterSkin"]);
             currentLanguage = Util.NullableCaster.CastInt(jObject["currentLanguage"]);
             saveName = Util.NullableCaster.CastString(jObject["saveName"]);
@@ -50,11 +48,6 @@ namespace GameSystems.Core
                     unlockedLevels.Add(Util.NullableCaster.CastInt(item));
                 }
             }
-
-
-
-
-
         }
     }
 }

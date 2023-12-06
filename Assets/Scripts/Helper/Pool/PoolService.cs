@@ -72,11 +72,11 @@ namespace GameSystems.Core
 
                 if (item.prefab.CompareTag("Undefined"))
                 {
-                    LogError(item);
+                    Util.ShowMessage($"Remove this Item{item.prefab.name}",TextColor.Yellow);
                 }
                 else
                 {
-                    LogDone();
+                    Util.ShowMessage($"Pool Item Added {item.prefab.tag}",TextColor.Green);
                 }
 
                 
@@ -84,14 +84,8 @@ namespace GameSystems.Core
             }
         }
 
-        private static void LogDone()
-        {
-            Debug.Log("Done");
-        }
+       
 
-        private static void LogError(PoolItem item)
-        {
-            Debug.LogError($"Remove this Item{item.prefab.name}");
-        }
+        
     }
 }

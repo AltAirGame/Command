@@ -11,9 +11,14 @@ namespace GameSystems.Core
 {
     public class UiManager : MonoBehaviour, IUiManager
     {
+        private event Action UIManagerIsInitialized;
+        public static event Action UIManagerShowModal;
+        public static event Action<string, string> UIManagerShowModalString;
+        public static event Action<ModalWindowData> UIManagerShowModalData;
 
-
-        private event Action IsInitilized; 
+        
+        
+        
         // ... other methods ...
         [SerializeField] private MenuController MenuController;
 
@@ -47,22 +52,19 @@ namespace GameSystems.Core
         private IDataManagementService dataManagerService;
         private IAssetLoaderService assetLoaderService;
         private IGameManger gameManger;
-        public static event Action ShowModal;
-        public static event Action<string, string> ShowModalString;
-        public static event Action<ModalWindowData> ShowModalData;
-
+        
         private void Start()
         {
             gameManger = ServiceLocator.Instance.GetService<IGameManger>();
             poolService = ServiceLocator.Instance.GetService<IPoolService>();
             dataManagerService = ServiceLocator.Instance.GetService<IDataManagementService>();
             assetLoaderService = ServiceLocator.Instance.GetService<IAssetLoaderService>();
-            IsInitilized?.Invoke();
+            UIManagerIsInitialized?.Invoke();
         }
 
         private void OnEnable()
         {
-            IsInitilized+=SubscribeEvents;
+            UIManagerIsInitialized += SubscribeEvents;
         }
 
         private void OnDisable()
@@ -102,22 +104,22 @@ namespace GameSystems.Core
 
         public void ShowMessage(ModalWindowData data)
         {
-            ShowModalData?.Invoke(data);
+            UIManagerShowModalData?.Invoke(data);
         }
 
         private void ShowModalMessage()
         {
-            ShowModal?.Invoke();
+            UIManagerShowModal?.Invoke();
         }
 
         private void ShowModalMessage(string header, string message)
         {
-            ShowModalString?.Invoke(header, message);
+            UIManagerShowModalString?.Invoke(header, message);
         }
 
-        private void ShowModalMessage(ModalWindowData data)
+        public void ShowModalMessage(ModalWindowData data)
         {
-            ShowModalData?.Invoke(data);
+            UIManagerShowModalData?.Invoke(data);
         }
 
         private void ShowQuittingDialogue()
@@ -126,8 +128,6 @@ namespace GameSystems.Core
                 " Yes!I Hate this Game", "No,My Mistake", new SlidInOut(),
                 () => { Application.Quit(); }));
 
-            // " Yes!I Hate this Game", "No,My Mistake", new SlidInOut(),
-            // () => { Application.Quit(); }));
         }
 
         // ... other methods related to modal messages ...
@@ -159,8 +159,8 @@ namespace GameSystems.Core
                 // Debug.Log(availableCommands.);
                 foreach (var item in avilableCommand)
                 {
-                    Debug.Log(item);
                     
+
                     var buttonObject = poolService.Get("GameButton");
                     buttonObject.transform.SetParent(playerInputParent, false);
                     buttonObject.SetActive(true);
@@ -168,11 +168,11 @@ namespace GameSystems.Core
                     Debug.Log($"command: {command.Name}");
                     var button = buttonObject.GetComponent<GameButton>();
                     button.SetListener(() => { CommandMangmentService.current.AddToCurrentBuffer(command); });
-                    
+
                     Debug.Log($"Button Object: {buttonObject}");
                     Debug.Log($"Pool Service: {poolService}");
                     Debug.Log($"AssetLoader Service: {assetLoaderService}");
-                    
+
                     assetLoaderService.LoadAddressableAsset<Sprite>($"icons/{command.Name.ToLower()}", (icon) =>
                     {
                         button.SetIcon(icon);

@@ -2,13 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
-
 using UnityEngine;
 
 
 namespace GameSystems.Core.Game
 {
-    
+
 
 public class LevelManagementService3D : MonoBehaviour, ILevelManagmentService
 {
@@ -22,10 +21,6 @@ public class LevelManagementService3D : MonoBehaviour, ILevelManagmentService
     private IPoolService poolService;
 
 
-    public static event Action<List<ICommand>> AddAvilableCommand;
-    public static event Action<int> AddBufferSize;
-    public static event Action<int> AddP1Size;
-    public static event Action<int> AddP2Size;
     [SerializeField] private bool DebugingIsOn = false;
     private List<GameObject> Cells;
     private GameCell[,] gameCells;

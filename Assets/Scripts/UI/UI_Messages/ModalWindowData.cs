@@ -21,7 +21,7 @@ namespace GameSystems.Core
             OnCancelMessage=$"Cancel";
             OnClickOkay=null;
             OnCancel=null;
-            UIAnimation=new SlidInOut();
+            UIAnimation = null;
         }
         
         public ModalWindowData(string header, string message, string onClickOkayMessage, string onCancelMessage,

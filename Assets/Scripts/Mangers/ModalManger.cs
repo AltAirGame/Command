@@ -11,16 +11,16 @@ namespace GameSystems.Core
 
         private void OnEnable()
         {
-            UiManager.ShowModal += ShowModal;
-            UiManager.ShowModalString += ShowModal;
-            UiManager.ShowModalData += ShowModal;
+            UiManager.UIManagerShowModal += UIManagerShowModal;
+            UiManager.UIManagerShowModalString += UIManagerShowModal;
+            UiManager.UIManagerShowModalData += UIManagerShowModal;
         }
 
         private void OnDisable()
         {
-            UiManager.ShowModal -= ShowModal;
-            UiManager.ShowModalString -= ShowModal;
-            UiManager.ShowModalData -= ShowModal;
+            UiManager.UIManagerShowModal -= UIManagerShowModal;
+            UiManager.UIManagerShowModalString -= UIManagerShowModal;
+            UiManager.UIManagerShowModalData -= UIManagerShowModal;
         }
 
 
@@ -29,7 +29,7 @@ namespace GameSystems.Core
             poolService = ServiceLocator.Instance.GetService<IPoolService>();
         }
 
-        private void ShowModal()
+        private void UIManagerShowModal()
         {
             var modalObject = poolService.Get("Modal");
             modalObject.SetActive(true);
@@ -38,7 +38,7 @@ namespace GameSystems.Core
             modal.Setup(new ModalWindowData());
         }
 
-        private void ShowModal(string header, string message)
+        private void UIManagerShowModal(string header, string message)
         {
             var modalObject = poolService.Get("Modal");
             modalObject.SetActive(true);
@@ -47,11 +47,11 @@ namespace GameSystems.Core
             modal.Setup(new ModalWindowData());
         }
 
-        private void ShowModal(ModalWindowData data)
+        private void UIManagerShowModal(ModalWindowData data)
         {
-            Debug.Log($"Pool is {(poolService is null?"null":"Not null")}");
+            Debug.Log($"Pool is {(poolService is null ? "null" : "Not null")}");
             var modalObject = poolService.Get("Modal");
-            Debug.Log($"Modal is {(modalObject is null?"null":"Not null")}");
+            Debug.Log($"Modal is {(modalObject is null ? "null" : "Not null")}");
             modalObject.SetActive(true);
             modalObject.transform.SetParent(modalMessageParent, false);
             var modal = modalObject.GetComponent<ModalWindow>();

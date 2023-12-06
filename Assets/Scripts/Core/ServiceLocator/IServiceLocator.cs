@@ -6,7 +6,7 @@ namespace GameSystems.Core
     public interface IServiceLocator
     {
         public Camera camera { get; }
-
+        
         void RegisterService<TInterface, TClass>(TClass service) where TInterface : class
             where TClass : MonoBehaviour, TInterface;
         Camera GetCamera();

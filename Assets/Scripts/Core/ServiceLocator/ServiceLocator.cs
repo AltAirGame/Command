@@ -11,7 +11,7 @@ namespace GameSystems.Core
     public class ServiceLocator : MonoBehaviour, IServiceLocator
     {
         public Camera camera { get; private set; }
-
+        public GameEventManager GameEventManager;
 
         private Dictionary<Type, object> _services = new Dictionary<Type, object>();
         private GameObject _servicesParent;

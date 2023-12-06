@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -27,8 +28,8 @@ namespace GameSystems.Core
 
         public void Setup(ModalWindowData data)
         {
-            this.data = data;
-            data.UIAnimation = new SlidInOut();
+            this.data = data; 
+            
             UpdateView();
         }
         private void UpdateView()
@@ -40,36 +41,44 @@ namespace GameSystems.Core
             onClickCancelText.text = string.IsNullOrWhiteSpace(data.Header) ? $" Cancel" : data.OnCancelMessage;
             OnCLickOkay.onClick.RemoveAllListeners();
             OnClickCancel.onClick.RemoveAllListeners();
-            var OnClickOkayAction = data.OnClickOkay is null
-                ? () => { Hide();}
-                : data.OnClickOkay;
+            // var OnClickOkayAction = data.OnClickOkay is null
+            //     ? () => { Hide();}
+            //     : data.OnClickOkay;
+            Action OnClickOkayAction = ()=>
+            {
+                data.OnClickOkay?.Invoke();
+                
+            };
+
             OnCLickOkay.onClick.AddListener(() => {OnClickOkayAction?.Invoke(); });
-            var OnClickCancelAction = data.OnCancel is null
-                ? () => { Hide();}
-                : data.OnCancel;
-            OnCLickOkay.onClick.AddListener(() => {OnClickCancelAction?.Invoke(); });
-            OnClickCancel.onClick.AddListener(() => { OnClickCancelAction?.Invoke();});
+            Action OnClickCancelAction = ()=>
+            {
+                data.OnCancel?.Invoke();
+                
+            };
+            OnCLickOkay.onClick.AddListener(() =>
+            {
+                OnClickCancelAction?.Invoke(); 
+                Hide();
+            });
+            OnClickCancel.onClick.AddListener(() =>
+            {
+                OnClickCancelAction?.Invoke();
+                Hide();
+            });
             Show();
         }
 
         private void Show()
         {
-            if (data is null|data.UIAnimation is null)
-            {
-                gameObject.SetActive(true);
-                return;
-            }
-            data.UIAnimation.Show(gameObject,null);
+            
+            data.UIAnimation.Show(MessageBox,null);
         }
 
         private void Hide()
         {
-            if (data is null||data.UIAnimation is null)
-            {
-                gameObject.SetActive(false);
-                return;
-            }
-            data.UIAnimation.Hide(gameObject,null);
+            
+            data.UIAnimation.Hide(MessageBox,null);
         }
 
         public void OnPointerClick(PointerEventData eventData)

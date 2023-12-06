@@ -27,9 +27,14 @@ namespace GameSystems.Core
             }
         }
 
+        private void onEscipe()
+        {
+            
+        }
+
         private void CallQuit()
         {
-            QuitApplication?.Invoke();
+            Application.Quit();
         }
     }
 }

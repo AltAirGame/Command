@@ -23,6 +23,15 @@ namespace GameSystems.Core.Game
         public GameButton ButtonPrefab;
 
 
+        private void OnEnable()
+        {
+            LevelManagementService3D.CurrentLevelEnded += NextLevel;
+        }
+
+        private void OnDisable()
+        {
+            LevelManagementService3D.CurrentLevelEnded -= NextLevel;
+        }
 
         private void Start()
         {
@@ -34,23 +43,18 @@ namespace GameSystems.Core.Game
         }
 
 
-        private void OnEnable()
-        {
-            LevelManagementService3D.CurrentLevelEnded += NextLevel;
-        }
-
-        private void OnDisable()
-        {
-            LevelManagementService3D.CurrentLevelEnded -= NextLevel;
-        }
-
         public event Action<List<string>> UpdatePlayerInput;
         public event Action<string> UpdateLevelNameText;
         public event Action<int, int, int> UpdateBufferUi;
 
         public void NextLevel()
         {
-            dataManagmentServiceManger.PlayerData.unlockedLevels.Add(CurrentLevel);
+            var alreadyPassed = dataManagmentServiceManger.PlayerData.unlockedLevels.Contains(CurrentLevel);
+            if (!alreadyPassed)
+            {
+                dataManagmentServiceManger.PlayerData.unlockedLevels.Add(CurrentLevel);
+            }
+
             Util.ShowMessage($" Next Level");
             uiManger.ShowMessage(new ModalWindowData("Congragulation", "You Finished This Level", "nextLevel", "Close",
                 new SlidInOut(), () =>
@@ -58,11 +62,11 @@ namespace GameSystems.Core.Game
                     var nextLevel = GetNextLevel();
                     if (nextLevel is null)
                     {
-                        //TODO Add ACtion to this Buttons
-                        uiManger.ShowMessage(new ModalWindowData(" Game Ended ", " you Finished the Game ",
-                            "Start over", "Quit the Game", new SlidInOut(),
-                            () => { StartLevelZero(); },
-                            () => { inputManagmentService.OnQuit(); }));
+                  
+                        uiManger.ShowMessage(new ModalWindowData("GameEnded",
+                            "You Finished the Current Available Levels ..", "Start Over", "Quit Game", new SlidInOut(),
+                            StartLevelZero, 
+                            () => {  }));
                     }
                     else
                     {
@@ -107,6 +111,7 @@ namespace GameSystems.Core.Game
         // ReSharper disable Unity.PerformanceAnalysis
         public Level GetNextLevel()
         {
+            Util.ShowMessage($"Current Level is {CurrentLevel} ", TextColor.Red);
             if (dataManagmentServiceManger.LevelData.levels.Count == CurrentLevel + 1)
             {
                 Util.ShowMessage($" No next level ");

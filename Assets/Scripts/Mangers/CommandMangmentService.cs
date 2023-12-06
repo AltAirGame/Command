@@ -14,10 +14,11 @@ namespace GameSystems.Core
         public static event Action ResetPlayerPosition;
         public static event Action<int, ICommand> AddToBuffer;
         public static event Action<int, int, int> RemoveAtIndexofBuffer;
-
-
+        
+    
         private ILevelManagmentService levelManager;
-
+        private WaitForSeconds WaitForSeconds = new WaitForSeconds(.1f);
+        
         private int curentBufferIndex = 0;
         public GameObject subjectOFCommand;
         public static CommandMangmentService current;
@@ -76,8 +77,8 @@ namespace GameSystems.Core
             Util.ShowMessage($" the Current MainCommand has {MainCommand.Count} item in it");
             for (int i = 0; i < MainCommand.Count; i++)
             {
-                yield return StartCoroutine(MainCommand[i].Execute(subjectOFCommand));
-                yield return null;
+                yield return ServiceLocator.Instance.RunCoroutine(MainCommand[i].Execute(subjectOFCommand));
+                yield return WaitForSeconds;
             }
         }
 
